@@ -72,16 +72,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\pedro\OneDrive\Área de Trabalho\GTA Modding\LegitimateBusiness\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\pedro\OneDrive\Área de Trabalho\GTA Modding\LegitimateBusiness\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>Compiled\$(Configuration)\</OutDir>
     <IntDir>Temp\$(Configuration)\</IntDir>
     <TargetExt>.asi</TargetExt>
     <TargetName>SuperSimeonAutos</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\pedro\OneDrive\Área de Trabalho\GTA Modding\LegitimateBusiness\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\pedro\OneDrive\Área de Trabalho\GTA Modding\LegitimateBusiness\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>Compiled\$(Configuration)\</OutDir>
     <IntDir>Temp\$(Configuration)\</IntDir>
     <TargetExt>.asi</TargetExt>
@@ -130,12 +130,14 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>ScriptHookV.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,6 +151,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,6 +160,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>ScriptHookV.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -165,6 +169,7 @@
     <ClCompile Include="Code\SaveSystem.cpp" />
     <ClCompile Include="Code\Script.cpp" />
     <ClCompile Include="Code\Settings.cpp" />
+    <ClCompile Include="Code\InGameMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\keyboard.h" />
@@ -172,6 +177,7 @@
     <ClInclude Include="Code\Script.h" />
     <ClInclude Include="Code\Settings.h" />
     <ClInclude Include="Code\Vehicles.h" />
+    <ClInclude Include="Code\InGameMenu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

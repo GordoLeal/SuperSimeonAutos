@@ -2,7 +2,7 @@
 #include "Script.h"
 #include "keyboard.h"
 #include "Vehicles.h"
-
+#include "InGameMenu.h"
 std::list<char*> deliveredVehicles;
 std::list<const char*> fullVehicleList;
 //Parking Lot Abuse
@@ -58,12 +58,12 @@ bool DisableInDLG = false;
 // MissionReplay
 bool missionReplayCalled;
 // Generate Remaining Cars List.
-const DWORD genMaxPressingTime = 3000;
+const DWORD genMaxPressingTime = 5000;
 DWORD genStartPressingTime;
 bool genStartTimer = false;
 bool genAlreadyCreatingFile = false;
 // Recover Remaining Cars from List.
-const DWORD recMaxPressingTime = 5000;
+const DWORD recMaxPressingTime = 8000;
 DWORD recStartPressingTime;
 bool recStartTimer = false;
 bool recAlreadyLookingFile = false;
@@ -78,6 +78,8 @@ bool finCashMSGReceived = false;
 DWORD finStartTimer;
 DWORD finTimeForSimeonMessage = 5000;
 DWORD finTimeForMoneyReceivedMSG = 16000;
+//InGameMenu
+InGameMenu* gameMenu;
 
 
 static void CreateHelpText(char* text, bool doSound) {
@@ -267,7 +269,7 @@ void SaveCheck()
 	// Did a save just happen? Check if any file has been modified, and if it did trigger the save.
 	//OutputDebugString(std::to_string(*IsGameSaving).c_str());
 
-	// Check if a saving is happening and if is manual save.
+	// Check if saving is happening and if is manual save.
 	if (*IsGameSaving && SCRIPT::_GET_NUMBER_OF_INSTANCES_OF_STREAMED_SCRIPT(GAMEPLAY::GET_HASH_KEY((char*)"save_anywhere")) > 0)
 	{
 		// if save has been called test if we can save and try to save into it.
@@ -422,7 +424,7 @@ static void QuickRemoveFromDelivered(char* veh) {
 	if (std::string(veh).find("PROPTRAILER") != std::string::npos) {
 		OrtegaTrailerDelivered = false;
 	}
-	deliveredVehicles.remove_if([veh](char* v) { return strcmp(v, veh) ==0; });
+	deliveredVehicles.remove_if([veh](char* v) { return strcmp(v, veh) == 0; });
 
 	if (deliveredVehicles.size() < fullVehicleList.size() + 1)
 	{
@@ -535,7 +537,7 @@ void ShowCollectedAmount() {
 		{
 			hmvStartTime = GetTickCount();
 			//quick help text
-			const char* outputHelp = "Need help?\nHold ~INPUT_RELOAD~ and ~INPUT_COVER~ for 5 seconds to create a missing cars list.";
+			const char* outputHelp = "Need help?\nPress ~INPUT_RELOAD~ + ~INPUT_COVER~ to check the missing vehicles list for Simeon.";
 			CreateHelpText((char*)outputHelp, true);
 		}
 	}
@@ -753,7 +755,7 @@ static void RecoverVehicleList()
 									// test vehicle and add to the list
 									if (!QuickCheckIfDelivered((char*)vModel.c_str()))
 									{
-										if (vModel.compare("PROPTRAILER") == 0) 
+										if (vModel.compare("PROPTRAILER") == 0)
 										{
 											OrtegaTrailerDelivered = true;
 											QuickAddToDelivered((char*)"PROPTRAILER");
@@ -1005,6 +1007,7 @@ void LighthouseDecoration() {
 
 void Update()
 {
+	//Funny lighthouse made by Gogsi
 	LighthouseDecoration();
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- CONSTANTLY USED VARIABLES =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	Ped pPedID = PLAYER::PLAYER_PED_ID();
@@ -1027,8 +1030,31 @@ void Update()
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- USER INTERFACE =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	ShowCollectedAmount();
-	FinaleUpdate();
 
+	FinaleUpdate();
+	gameMenu->DrawMenu();
+
+	if (
+		(CONTROLS::IS_CONTROL_PRESSED(0, eControl::ControlCover) && CONTROLS::IS_CONTROL_JUST_PRESSED(0, eControl::ControlReload))
+		|| (CONTROLS::IS_CONTROL_JUST_PRESSED(0, eControl::ControlCover) && CONTROLS::IS_CONTROL_PRESSED(0, eControl::ControlReload))
+		)
+	{
+		gameMenu->SwitchOpenState();
+	}
+
+	char* vehTest;
+	if (gameMenu->VehicleToBeRemoved(&vehTest))
+	{
+		if (QuickCheckIfDelivered(vehTest))
+			QuickRemoveFromDelivered(vehTest);
+		gameMenu->UpdateVehiclesList();
+	}
+	if (gameMenu->VehicleToBeAdded(&vehTest))
+	{
+		if (!QuickCheckIfDelivered(vehTest))
+			QuickAddToDelivered(vehTest);
+		gameMenu->UpdateVehiclesList();
+	}
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- PLAYER INPUT STUFF =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	TestInputForMissingVehicles();
@@ -1036,7 +1062,6 @@ void Update()
 
 	//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-  MISSION SPECIFIC STUFF  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 
 
-	// i don't like this code, find a better way later...
 	DisableInArmenian = false;
 	DisableInDLG = false;
 
@@ -1055,7 +1080,7 @@ void Update()
 	}
 
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- TRAILERS AND ORTEGA TEST =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	// We want to only call this only once per frame, so have it in a way that can be reused for other parts of the script.
+	// For optmization, We want to only call this loop only once per frame, so have it set in a way that can be reused for other parts of the script.
 	const int ARR_SIZE = 255;
 	Vehicle vehInWorld[ARR_SIZE];
 	int vehInWorldCount = worldGetAllVehicles(vehInWorld, ARR_SIZE);
@@ -1128,9 +1153,9 @@ void Update()
 		// Wait for player to get into a vehicle and check if is valid.
 		if (PED::IS_PED_IN_ANY_VEHICLE(pPedID, false))
 		{
-			// Entering another vehicle after delivering causes the lookingForValidVehicle to be set
+			// BUG: Entering another vehicle after delivering causes the lookingForValidVehicle to be set
 			// even if we are inside a valid vehicle.
-			// adding this small delay fixes it.
+			// adding this small delay fixes it. I don't know why...
 			WAIT(100);
 
 			Vehicle lastDrivenVehicle = PLAYER::GET_PLAYERS_LAST_VEHICLE();
@@ -1286,7 +1311,6 @@ void Update()
 			if (!IsInFlyingVehiclesList(lastValidVehicle))
 			{
 				//Add a small delay just so the player see the car flying
-				OutputDebugString("IS NOT A FLYING");
 				WAIT(1000);
 			}
 			ENTITY::SET_ENTITY_COORDS(pPedID, LighthouseTPoint.x, LighthouseTPoint.y, LighthouseTPoint.z, false, false, false, false); // warp to safe zone.
@@ -1406,8 +1430,10 @@ void Update()
 			deliMsg += ")";
 			VEHICLE::DETACH_VEHICLE_FROM_ANY_TOW_TRUCK(lastDriven);
 			QuickAddToDelivered(lastValidVehicle);
-			// BUG: if player is in a hangout, for some random reason the script sets the last driven to null but the vehicle never gets deleted.
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(lastDriven, 0, 0, -50, true, true, true);
+			gameMenu->UpdateVehiclesList();
+			// BUG: if player is in a hangout, for some random reason the script sets the last driven to null and the vehicle never gets deleted.
+			// Set position from last driven vehicle really far from the player to force mission fails and force to clean the vehicle from the memory in case is not destroyed.
+			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(lastDriven, 10000, 10000, 5000, true, true, true);
 			VEHICLE::EXPLODE_VEHICLE(lastDriven, false, true);
 			ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&lastDriven);
 			//Last Try to remove the vehicle.
@@ -1422,6 +1448,7 @@ void Update()
 	}
 }
 
+// =-=-=-=-=- MAIN ENTRY FUNCTION =-=-=-=-=-=-=-=-=-=
 // Reminder to myself: variables set outside of functions are reserved as globals
 // they keep their value between transitions and loading screens IF a default value have not been set.
 // the code inside the script is reloaded after transitions and loading screens.
@@ -1437,6 +1464,7 @@ void ScriptMain()
 	FillFullVehicleList();
 	// Script got reloaded, try read the save files and see if we should do something.
 	LoadCurrentSave();
+
 	WAIT(1000);
 	//Check if it was possible to create the file.
 	if (!gSettings.DoesSettingsFileExists())
@@ -1446,9 +1474,17 @@ void ScriptMain()
 		UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", false, 4, (char*)"WARNING!", (char*)"");
 		UI::_DRAW_NOTIFICATION(0, 1);
 	}
+
 	//Check if ortega trailer was delivered
 	SetOrtegaTrailerWasDelivered();
 	currentStage = ScriptStage::CheckCurrentVehicle;
+
+	if (gameMenu == nullptr)
+	{
+		gameMenu = new InGameMenu(&gSettings, &deliveredVehicles, &fullVehicleList);
+	}
+	gameMenu->UpdateVehiclesList();
+
 	while (true) {
 		Update();
 		WAIT(0);

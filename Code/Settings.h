@@ -16,8 +16,6 @@ public:
 	bool ShowHelpText;
 	bool AntiParkingLotBeach;
 	bool OnMissionZeroVehicles;
-
-
 	bool DoesSettingsFileExists();
 	void ReadValuesFromSettingsFile();
 	void CreateSettingsFile();

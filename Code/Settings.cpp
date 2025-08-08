@@ -12,65 +12,90 @@ void Settings::CreateSettingsFile()
 {
 	std::fstream settingsStream;
 	settingsStream.open(SettingsFileName, std::ios::in | std::ios::out | std::ios::trunc);
+	settingsStream.clear();
 	if (settingsStream.is_open()) {
-		OutputDebugStringA("ta open");
-		std::string fileout;
-		fileout += "# SETTINGS FOR SUPER SIMEON AUTOS\n";
-		fileout += "# 0 = Disabled | 1 = Enabled\n\n";
+		settingsStream << "# SETTINGS FOR SUPER SIMEON AUTOS\n";
+		settingsStream << "# 0 = Disabled | 1 = Enabled\n\n";
 
-		fileout += "# Enable lighthouse as a delivery point [enabled (1) by default]\n";
-		fileout += "LightHouseAsDelivery=1\n\n";
+		settingsStream << "# Enable lighthouse as a delivery point [enabled (1) by default]\n";
+		settingsStream << "LightHouseAsDelivery=";
+		settingsStream << LightHouseAsDelivery;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable the Del Perro Pier as a delivery point [enabled (1) by default]\n";
-		fileout += "PierAsDelivery=1\n\n";
+		settingsStream << "# Enable the Del Perro Pier as a delivery point [enabled (1) by default]\n";
+		settingsStream << "PierAsDelivery=";
+		settingsStream << PierAsDelivery;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable/Disable the Del Perro Pier as a delivery point during Daddy's Little Girl [enabled (1) by default]\n";
-		fileout += "PierStateDuringDLG=1\n\n";
+		settingsStream << "# Enable/Disable the Del Perro Pier as a delivery point during Daddy's Little Girl [enabled (1) by default]\n";
+		settingsStream << "PierStateDuringDLG=";
+		settingsStream << PierStateDuringDLG;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable or Disable Simeon as a delivery point during Armenian missions (Frankling and Lamar | Complications) [enabled (1) by default]\n";
-		fileout += "SimeonStateDuringArmenian=1\n\n";
+		settingsStream << "# Enable or Disable Simeon as a delivery point during Armenian missions (Frankling and Lamar | Complications) [enabled (1) by default]\n";
+		settingsStream << "SimeonStateDuringArmenian=";
+		settingsStream << SimeonStateDuringArmenian;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable the lifeguard tower (Vespucci Beach) as a delivery point [Disabled (0) by default]\n";
-		fileout += "BeachAsDelivery=0\n\n";
+		settingsStream << "# Enable the lifeguard tower (Vespucci Beach) as a delivery point [Disabled (0) by default]\n";
+		settingsStream << "BeachAsDelivery=";
+		settingsStream << BeachAsDelivery;
+		settingsStream << "\n\n";
 
-		fileout += "# Protection for the player to not abuse the parking lot next to lifeguard tower (anti cheat) [enabled (1) by default]\n";
-		fileout += "AntiParkingLotBeach=1\n\n";
+		settingsStream << "# Protection for the player to not abuse the parking lot next to lifeguard tower (anti cheat) [enabled (1) by default]\n";
+		settingsStream << "AntiParkingLotBeach=";
+		settingsStream << AntiParkingLotBeach;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable Simeon as a delivery point [enabled (1) by default]\n";
-		fileout += "SimeonAsDelivery=1\n\n";
+		settingsStream << "# Enable Simeon as a delivery point [enabled (1) by default]\n";
+		settingsStream << "SimeonAsDelivery=";
+		settingsStream << SimeonAsDelivery;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable Trailers as vehicles that can be delivered [enabled (1) by default]\n";
-		fileout += "EnableTrailers=1\n\n";
+		settingsStream << "# Enable Trailers as vehicles that can be delivered [enabled (1) by default]\n";
+		settingsStream << "EnableTrailers=";
+		settingsStream << EnableTrailers;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable Heli/Planes to be delivered [enabled (1) by default]\n";
-		fileout += "EnableFlyingVehicles=1\n\n";
+		settingsStream << "# Enable Heli/Planes to be delivered [enabled (1) by default]\n";
+		settingsStream << "EnableFlyingVehicles=";
+		settingsStream << EnableFlyingVehicles;
+		settingsStream <<"\n\n";
 
-		fileout += "# Enable boats to be delivered [enabled (1) by default]\n";
-		fileout += "EnableWaterVehicles=1\n\n";
+		settingsStream << "# Enable boats to be delivered [enabled (1) by default]\n";
+		settingsStream << "EnableWaterVehicles="; 
+		settingsStream << EnableWaterVehicles;
+		settingsStream << "\n\n";
 
-		fileout += "# Enable Bury the Hatchet ( North Yankton ) vehicles [Disabled (0) by default]\n";
-		fileout += "EnableBuryNYVehicles=0\n\n";	
+		settingsStream << "# Enable Bury the Hatchet ( North Yankton ) vehicles [Disabled (0) by default]\n";
+		settingsStream << "EnableBuryNYVehicles=";
+		settingsStream << EnableBuryNYVehicles;
+		settingsStream << "\n\n";
 		
-		fileout += "# Enable On mission 0 vehicles ( only clown car at the moment ) [Disabled (0) by default]\n";
-		fileout += "OnMissionZeroVehicles=0\n\n";
+		settingsStream << "# Enable On mission 0 vehicles ( only clown car at the moment ) [Disabled (0) by default]\n";
+		settingsStream << "OnMissionZeroVehicles=";
+		settingsStream << OnMissionZeroVehicles;
+		settingsStream << "\n\n";
 
-		fileout += "# Display Max Amount of vehicles to be collected [enabled (1) by default]\n";
-		fileout += "DisplayMaxAmount=1\n\n";
+		settingsStream << "# Display Max Amount of vehicles to be collected [enabled (1) by default]\n";
+		settingsStream << "DisplayMaxAmount=";
+		settingsStream << DisplayMaxAmount;
+		settingsStream << "\n\n";
 
-		fileout += "# Show help text about missing vehicles list every 30 minutes [enabled (1) by default]\n";
-		fileout += "ShowHelpText=1\n\n";
+		settingsStream << "# Show help text about missing vehicles list every 30 minutes [enabled (1) by default]\n";
+		settingsStream << "ShowHelpText=";
+		settingsStream << ShowHelpText;
+		settingsStream << "\n\n";
 
-		fileout += "# Tip: If for some reason you lose your progress (maybe a bug or lost save file)\n";
-		fileout += "# load a save in the game and generate the SSA_MissingVehicles by holding your \"Get in cover\" and \"Reload Weapon\" buttons (Q and R by default) for 5 seconds\n";
-		fileout += "# Inside the SSA_MissingVehicles.txt, add a + or ! at the end of the line for every vehicle you want to Add or Remove from the list.\n";
-		fileout += "# like this: \"Asea (ASEA2)+\" or \"Asea (ASEA2)!\" \n";
-		fileout += "# Inside the game hold the \"Get in Cover\" and \"Jump\" buttons (Q and Spacebar by default), this will load all the vehicles with + at the end\n";
+		settingsStream <<  "# Tip: If for some reason you lose your progress (maybe a bug or lost save file)\n";
+		settingsStream <<  "# load a save in the game and generate the SSA_MissingVehicles by holding your \"Get in cover\" and \"Reload Weapon\" buttons (Q and R by default) for 5 seconds\n";
+		settingsStream <<  "# Inside the SSA_MissingVehicles.txt, add a + or ! at the end of the line for every vehicle you want to Add or Remove from the list.\n";
+		settingsStream <<  "# like this: \"Asea (ASEA2)+\" or \"Asea (ASEA2)!\" \n";
+		settingsStream <<  "# Inside the game hold the \"Get in Cover\" and \"Jump\" buttons (Q and Spacebar by default), this will load all the vehicles with + at the end\n";
 
-		fileout += "# Mod Made by GordoLeal\n";
-		fileout += "# Twitch.tv/GordoLeal";
-		settingsStream << fileout;
+		settingsStream << "# Mod Made by GordoLeal\n";
+		settingsStream << "# Twitch.tv/GordoLeal";
 	}
-
 	settingsStream.close();
 }
 
@@ -104,7 +129,6 @@ void Settings::ReadValuesFromSettingsFile()
 {
 	if (!DoesSettingsFileExists()) {
 
-		CreateSettingsFile();
 		LightHouseAsDelivery = true;
 		BeachAsDelivery = false;
 		SimeonAsDelivery = true;
@@ -119,6 +143,7 @@ void Settings::ReadValuesFromSettingsFile()
 		AntiParkingLotBeach = true;
 		EnableBuryNYVehicles = false;
 		OnMissionZeroVehicles = false;
+		CreateSettingsFile();
 		return;
 	}
 

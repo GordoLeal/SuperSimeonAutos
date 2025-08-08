@@ -1,10 +1,12 @@
 ![simeonautosbanner](https://github.com/user-attachments/assets/39f17048-ae7a-4671-ac17-49fcb32cce04)
 # Super Simeon Autos
 
-Super Simeon Autos is a mod for Grand Theft Auto V  that lets you collect and deliver (almost all) vehicles to specific locations on the map.
+Super Simeon Autos (SSA) is a mod for Grand Theft Auto V  that lets you collect and deliver (almost) all vehicles to specific locations on the map.
+Inspired by the Super Sunshine Autos and similar mods for the 3D era GTA Games.
 
 ## Requirements
-* Game Version: Grand Theft Auto V [version 1.27](https://github.com/TwosHusbandS/Project-127/) (Legacy). This mod is only tested without issues with version 1.27.
+This mod currently only works for legacy patch 1.27 (the speedrunners patch) but current patch / Enhanced is on the works.
+* Game Version: Grand Theft Auto V [version 1.27](https://github.com/TwosHusbandS/Project-127/) (Legacy).
 * ScriptHookV: Install the latest version of [ScriptHookV](https://www.dev-c.com/gtav/scripthookv/) as the mod was developed using it.
 * Returning Player Bonus: Required for all vehicles to function properly. The game will still launch without it, but vehicle collection may be impacted. (can be toggled on/off in the Project 1.27 launcher)
 
@@ -15,7 +17,7 @@ Super Simeon Autos is a mod for Grand Theft Auto V  that lets you collect and de
 4. Install the latest version of [ScriptHookV](https://www.dev-c.com/gtav/scripthookv/).
 5. Download the latest release of Super Simeon Autos from the [Releases](https://github.com/GordoLeal/SuperSimeonAutos/releases) page.
 6. Place the downloaded .asi file in the root of your GTA V installation directory.
-7. Launch the game and load a save file to generate the <code>SSA_Settings.txt</code> configuration file.
+7. Launch the game and load a save file to generate the <code>SSA_Settings.txt</code> configuration file, and change it to how you want the gameplay to be.
 
 ## How to play
 **Objective**: Locate vehicles across the map ([vehicles guide available](https://docs.google.com/document/d/1HLy1r_IYJAnth6uyUSzunOT0c65c5wLdxrW01GbjFZA/edit?usp=sharing)) and deliver them to highlighted delivery points.
@@ -36,6 +38,11 @@ Other small options inside the SSA_Settings.txt are also available for you to ad
 
 ## Support
 For bugs, questions, or suggestions, send a message in #ssa-mod-discussion in the [GTA V Speedruns Discord](https://discord.com/invite/3qjGGBM) or check the [Project-127 repository](https://github.com/TwosHusbandS/Project-127/) for more information.
+
+## Building the Code
+This project has been made and compiled with Visual Studio Community 2022.
+Folder Setup:
+TODO
 
 ## Credits
 Mod Created By GordoLeal.
