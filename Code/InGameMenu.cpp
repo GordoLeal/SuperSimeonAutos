@@ -190,7 +190,7 @@ void InGameMenu::DrawMenu()
 
 	//Top Banner
 	DrawReactOnTopLeft(menuPosX, menuPosY, menuW, mainBannerH, 110, 0, 255, 255);
-	DrawBasicText((char*)"SUPER SIMEON AUTOS", menuPosX + 0.005f, menuPosY + 0.015f, 0.5f, 1);
+	DrawBasicText((char*)"SUPER SIMEON AUTOS", menuPosX + 0.005f, menuPosY + 0.015f, 0.5f, 7);
 
 	float anchorSecBanner = menuPosY + mainBannerH;
 

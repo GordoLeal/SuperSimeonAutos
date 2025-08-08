@@ -103,7 +103,23 @@ void LoadHookPointers() {
 	DWORD sizeOfImage = ntHeaders->OptionalHeader.SizeOfImage;
 	EndOfOurModule = OurModuleBase + sizeOfImage;
 
-	SaveSystem::GetSaveFilePath(false, &pathToSaveFolder);
+	//Saves Folder Path
+	std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
+
+	//1.27 is only available in legacy, use default.
+	if (gameVersionStr == "1.27")
+	{
+		SaveSystem::GetSaveFilePath(false, false ,&pathToSaveFolder);
+	}
+	else
+	{
+		char modulePath[260];
+		GetModuleFileNameA(Module, modulePath, 260);
+		if (std::string(modulePath).find("GTAV_Enhanced.exe") != std::string::npos)
+			SaveSystem::GetSaveFilePath(true, true,&pathToSaveFolder);
+		else
+			SaveSystem::GetSaveFilePath(true, false, &pathToSaveFolder);
+	}
 
 	// Pattern Finding
 	// Number of last Loaded Save slot
@@ -111,43 +127,43 @@ void LoadHookPointers() {
 	{
 		if (SaveSystem::GetLastReadSlotNumber(&LastLoadedSaveSlotNumber, &pSavedSlotNumberPTR) != SaveSystem::ErrSave::SaveDone)
 		{
-			OutputDebugString("something happened address could not be loaded...");
-			CreateHelpText((char*)"something happened address could not be loaded...", true);
+			OutputDebugString("something happened address could not be loaded... (getLastReadSlotNumber)");
+			CreateHelpText((char*)"something happened address could not be loaded... (getLastReadSlotNumber)", true);
 			return;
 		}
 	}
 	else
 	{
-		OutputDebugString("something happened and pointers could not be loaded...");
-		CreateHelpText((char*)"something happened and pointers could not be loaded...", true);
+		OutputDebugString("something happened and pointers could not be loaded... (getPointerToLastLoadedSlot)");
+		CreateHelpText((char*)"something happened and pointers could not be loaded... (getPointerToLastLoadedSlot)", true);
 		return;
 	}
 	//char* of to be loaded Save File.
 	if (SaveSystem::GetPointerToBeLoadedSaveFile(&pToBeLoadedSaveFilePTR) == SaveSystem::ErrSave::SaveDone) {
 		if (SaveSystem::GetToBeReadSaveFile(&ToBeLoadedSaveFile, &pToBeLoadedSaveFilePTR) != SaveSystem::ErrSave::SaveDone) {
-			OutputDebugString("something happened address could not be loaded...");
-			CreateHelpText((char*)"something happened address could not be loaded...", true);
+			OutputDebugString("something happened address could not be loaded... (ToBeLoadedSaveFile)");
+			CreateHelpText((char*)"something happened address could not be loaded... (ToBeLoadedSaveFile)", true);
 			return;
 		}
 	}
 	else
 	{
-		OutputDebugString("something happened and pointers could not be loaded...");
-		CreateHelpText((char*)"something happened and pointers could not be loaded...", true);
+		OutputDebugString("something happened and pointers could not be loaded...(PointerToBeLoadedSaveFile)");
+		CreateHelpText((char*)"something happened and pointers could not be loaded...(PointerToBeLoadedSaveFile)", true);
 		return;
 	}
 
 	if (SaveSystem::GetPointerToIsSaveHappening(&pIsSaveMenuOpen) == SaveSystem::ErrSave::SaveDone) {
 		if (SaveSystem::GetIntPointerFromPointer(&IsGameSaving, &pIsSaveMenuOpen) != SaveSystem::ErrSave::SaveDone) {
-			OutputDebugString("something happened address could not be loaded...");
-			CreateHelpText((char*)"something happened address could not be loaded...", true);
+			OutputDebugString("something happened address could not be loaded...(ToIsSaveHappening)");
+			CreateHelpText((char*)"something happened address could not be loaded...(ToIsSaveHappening)", true);
 			return;
 		}
 	}
 	else
 	{
-		OutputDebugString("something happened and pointers could not be loaded...");
-		CreateHelpText((char*)"something happened and pointers could not be loaded...", true);
+		OutputDebugString("something happened and pointers could not be loaded...(PointerToIsSaveHappening)");
+		CreateHelpText((char*)"something happened and pointers could not be loaded...(PointerToIsSaveHappening)", true);
 		return;
 	}
 }
@@ -1484,6 +1500,7 @@ void ScriptMain()
 		gameMenu = new InGameMenu(&gSettings, &deliveredVehicles, &fullVehicleList);
 	}
 	gameMenu->UpdateVehiclesList();
+
 
 	while (true) {
 		Update();

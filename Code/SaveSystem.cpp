@@ -516,13 +516,13 @@ SaveSystem::ErrSave SaveSystem::LoadProgressFromReplay(std::wstring saveFolderPa
 	return FillArrayWithSaveFileData(saveFolderPath, mostRecentFile, deliveredVehiclesFromSave);
 }
 
-SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, std::wstring* saveFolderPathBuffer)
+SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnhanced, std::wstring* saveFolderPathBuffer)
 {
 	// I was going to make a better way of dealing with errors but i got lazy. - GordoLeal.
 
 	//To get the full path for the game files i need to find where it is.
-	// - To find it i need to find the documents folder. Microsoft likes to move this shit everwhere.
-	// - i need to find if the game is using Project127 (custom path) or is Enhanced (default path).
+	// - To find it i need to find the documents folder. Microsoft likes to move this shit everwhere because of OneDrive.
+	// - i need to find if the game is using Project127 (custom path), current patch or is Enhanced (default path).
 	// - Find the player ID so we can get the correct folder.
 
 	//First get the documents folder, because of microsoft reasons the path for this fucking thing point to everwhere.
@@ -545,9 +545,16 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, std::wstrin
 	{
 		// Instead of getting the first available folder, i test for the last modified folder, 
 		// this way in the rare case is a multi profile user the mod can support it
-
+		std::wstring enhancedSavePath;
+		if (IsEnhanced)
+		{
+			enhancedSavePath = testPathDoc + (std::wstring)L"\\Rockstar Games\\GTAV Enhanced\\Profiles";
+		}
+		else
+		{
+			enhancedSavePath = testPathDoc + (std::wstring)L"\\Rockstar Games\\GTA V\\Profiles";
+		}
 		// L"\\Rockstar Games\\GTA V\\Profiles\\GTA V"
-		std::wstring enhancedSavePath = testPathDoc + (std::wstring)L"\\Rockstar Games\\GTA V\\Profiles\\GTA V";
 		WIN32_FIND_DATAW folderDataEnhanced;
 		HANDLE hFind = FindFirstFileW((enhancedSavePath + L"\\*").c_str(), &folderDataEnhanced);
 		if (hFind == INVALID_HANDLE_VALUE)

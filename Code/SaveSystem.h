@@ -63,7 +63,7 @@ public:
 	/// <summary>
 	/// returns the path to the save file folder
 	/// </summary>
-	static ErrSave GetSaveFilePath(bool isCurrentPatch, std::wstring* pathToSaveFolder);
+	static ErrSave GetSaveFilePath(bool isCurrentPatch,bool isEnhanced, std::wstring* pathToSaveFolder);
 	//static ErrSave FillArrayWithSaveFileData(std::wstring saveFolderPath, std::wstring saveFileName, std::list<char*>& deliveredVehiclesFromSave);
 };
 
