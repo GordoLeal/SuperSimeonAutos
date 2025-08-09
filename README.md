@@ -6,12 +6,6 @@ Inspired by the Super Sunshine Autos and similar mods for the 3D era GTA Games.
 
 This mod is aimed at speedrunners and experienced players, but most of the glitch heavy vehicles can be disabled (Bury the Hatchet and Om0 vehicles), so you might be able to have a smooth experience.
 
-## Requirements
-This mod currently only works for legacy patch 1.27 (the speedrunners patch) but current patch / Enhanced is on the works.
-* Game Version: Grand Theft Auto V [version 1.27](https://github.com/TwosHusbandS/Project-127/) (Legacy).
-* ScriptHookV: Install the latest version of [ScriptHookV](https://www.dev-c.com/gtav/scripthookv/) as the mod was developed using it.
-* Returning Player Bonus: Required for all vehicles to function properly. The game will still launch without it, but vehicle collection may be impacted. (can be toggled on/off in the Project 1.27 launcher)
-
 ## Installation
 For Current Patch / Enhanced:
 1. Install the latest version of [ScriptHookV](https://www.dev-c.com/gtav/scripthookv/).
