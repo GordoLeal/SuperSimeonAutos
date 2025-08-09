@@ -3,6 +3,7 @@
 
 Super Simeon Autos (SSA) is a mod for Grand Theft Auto V  that lets you collect and deliver (almost) all vehicles to specific locations on the map.
 Inspired by the Super Sunshine Autos and similar mods for the 3D era GTA Games.
+
 This mod is aimed at speedrunners and experienced players, but most of the glitc heavy vehicles can be disabled (Bury the Hatchet and Om0 vehicles), so you might be able to have a smooth experience.
 
 ## Requirements
