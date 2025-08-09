@@ -39,15 +39,30 @@ Other small options inside the SSA_Settings.txt are also available for you to ad
 ## Support
 For bugs, questions, or suggestions, send a message in #ssa-mod-discussion in the [GTA V Speedruns Discord](https://discord.com/invite/3qjGGBM) or check the [Project-127 repository](https://github.com/TwosHusbandS/Project-127/) for more information.
 
-## Building the Code
-This project has been made and compiled with Visual Studio Community 2022.
-Folder Setup:
-TODO
-
 ## Credits
 Mod Created By GordoLeal.
 
 Thanks to Special For and Gogsi for providing help with the code and knowledge about the game.
 
 Thanks to Unnamed, AlexHonix, Twisted and the GTAV speedrun community for helping with the vehicle list.
+
+## Project Tree
+This mod is coded and compiled with Visual Studio Community 2022.
+
+Since i use the same inc and lib folders from ScriptHookV SDK to create other mods my folder tree is the one bellow.
+This is more of a reminder to myself in case i want to update the mod. but might be usefull if someone want to mess around with this mess of code that i call SSA.
+
+* Folder Setup for the project:
+```
+Projects Folder
+> inc ( ScripthookV )
+> lib ( ScripthookV )
+> LegitimateBusiness (Mod folder)
+  > code
+  > githubpage
+  > LegitimateBusiness.sln
+  > etc..
+> Other Mod Projects..
+```
+
 
