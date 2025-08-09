@@ -91,7 +91,7 @@ const char* VehiclesList[] =
 "DILETTANTE",
 "DILETTANTE2", //spawns in Davis Quartz zone at night.
 //"DINGHY", //Water
-//"DINGHY2", //WATEr
+//"DINGHY2", //Water
 "DLOADER",
 //"DOCKTRAILER",
 "DOCKTUG",
@@ -429,7 +429,7 @@ const char* WaterVehicles[] =
 //"TORO", //WATER - Not Available in 1.27
 "TROPIC", //WATER
 "DINGHY", //Water
-"DINGHY2" //WATEr
+"DINGHY2" //Water
 };
 
 const char* SnowVehicles[] =
@@ -449,6 +449,20 @@ const char* SnowVehicles[] =
 const char* OmoVehicles[] =
 {
 	"SPEEDO2"
+};
+
+const char* CurrentPatch_Cars[] =
+{
+	"BRAWLER", //not available in 1.27
+	"CHINO", //Not available in 1.27
+	"COQUETTE3", //Not available in 1.27
+	"T20",  // not available in 1.27
+	"VINDICATOR" // no available in 1.27
+};
+
+const char* CurrentPatch_Water[] =
+{
+	"TORO", //WATER - Not Available in 1.27
 };
 
 bool IsInFlyingVehiclesList(char* veh);

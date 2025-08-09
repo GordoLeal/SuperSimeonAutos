@@ -52,6 +52,7 @@ char* lastValidVehicle;
 Settings gSettings;
 ScriptStage currentStage = ScriptStage::CheckCurrentVehicle;
 bool OrtegaTrailerDelivered;
+bool IsEnhanced = false;
 // Mission specific
 bool DisableInArmenian = false;
 bool DisableInDLG = false;
@@ -105,7 +106,7 @@ void LoadHookPointers() {
 
 	//Saves Folder Path
 	std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
-	bool IsEnhanced = false;
+	
 	//1.27 is only available in legacy, use default.
 	if (gameVersionStr == "1.27")
 	{
@@ -113,16 +114,7 @@ void LoadHookPointers() {
 	}
 	else
 	{
-		char modulePath[260];
-		GetModuleFileNameA(Module, modulePath, 260);
-		if (std::string(modulePath).find("GTA5_Enhanced.exe") != std::string::npos)
-		{
-			OutputDebugString("ENHANCED DETECTED");
-			SaveSystem::GetSaveFilePath(true, true, &pathToSaveFolder);
-			IsEnhanced = true;
-		}
-		else
-			SaveSystem::GetSaveFilePath(true, false, &pathToSaveFolder);
+		SaveSystem::GetSaveFilePath(true, IsEnhanced, &pathToSaveFolder);
 	}
 
 	// Pattern Finding
@@ -174,6 +166,9 @@ void LoadHookPointers() {
 	}
 }
 
+/// <summary>
+/// Fill the vehicle list
+/// </summary>
 void FillFullVehicleList()
 {
 	fullVehicleList.clear();
@@ -181,21 +176,37 @@ void FillFullVehicleList()
 	{
 		fullVehicleList.push_back(a);
 	}
-
-	if (gSettings.EnableFlyingVehicles)
+	if (IsEnhanced)
 	{
-		for (const char* b : FlyingVehicles)
+		for (const char* aEnh : CurrentPatch_Cars)
 		{
-			fullVehicleList.push_back(b);
+			fullVehicleList.push_back(aEnh);
+		}
+		if (gSettings.EnableFlyingVehicles)
+		{
+			for (const char* b : FlyingVehicles)
+			{
+				fullVehicleList.push_back(b);
+			}
 		}
 	}
+
 	if (gSettings.EnableWaterVehicles)
 	{
 		for (const char* c : WaterVehicles)
 		{
 			fullVehicleList.push_back(c);
 		}
+		if (IsEnhanced)
+		{
+			for (const char* cEnh : CurrentPatch_Water)
+			{
+				fullVehicleList.push_back(cEnh);
+			}
+		}
 	}
+
+
 	if (gSettings.EnableTrailers)
 	{
 		for (const char* d : TrailerVehicles)
@@ -219,6 +230,7 @@ void FillFullVehicleList()
 			fullVehicleList.push_back(f);
 		}
 	}
+
 }
 
 bool IsInFlyingVehiclesList(char* veh)
@@ -234,6 +246,7 @@ bool IsInFlyingVehiclesList(char* veh)
 	}
 	return false;
 }
+
 // Save System
 
 void LoadCurrentSave() {
@@ -287,7 +300,7 @@ void LoadCurrentSave() {
 void SaveCheck()
 {
 	// GTA and ScriptHookV don't have a option to directly check if the player just saved the game manually, only auto saves.
-	// So we need to do this manual check via globals.
+	// We need to do this manual check via globals.
 	// Did a save just happen? Check if any file has been modified, and if it did trigger the save.
 	//OutputDebugString(std::to_string(*IsGameSaving).c_str());
 
@@ -338,7 +351,7 @@ void SaveCheck()
 					CreateHelpText((char*)"Collected Vehicles autosaved with success!", true);
 				}
 				else {
-					CreateHelpText((char*)"Saving error! please try again...", true);
+					CreateHelpText((char*)"Error while Auto Saving! please try again...", true);
 				}
 			}
 		}
@@ -559,7 +572,7 @@ void ShowCollectedAmount() {
 		{
 			hmvStartTime = GetTickCount();
 			//quick help text
-			const char* outputHelp = "Need help?\nPress ~INPUT_RELOAD~ + ~INPUT_COVER~ to check the missing vehicles list for Simeon.";
+			const char* outputHelp = "Need help?\nPress ~INPUT_RELOAD~ + ~INPUT_COVER~ to check the missing vehicles list.";
 			CreateHelpText((char*)outputHelp, true);
 		}
 	}
@@ -1022,7 +1035,34 @@ void LighthouseDecoration() {
 		}
 	}
 }
+void WarpPedsInsideVehicleTo(int vehicleID,float coordX, float coordY,float coordZ)
+{
+	// VS_ANY_PASSENGER = -2, //Any passenger seat
+	// VS_DRIVER = -1, // Drivers seat
+	// VS_FRONT_RIGHT = 0, // Front Right seat
+	// VS_BACK_LEFT, //Back left 	
+	// VS_BACK_RIGHT, //Back right
+	// VS_EXTRA_LEFT_1,
+	// VS_EXTRA_RIGHT_1,
+	// VS_EXTRA_LEFT_2,
+	// VS_EXTRA_RIGHT_2,
+	// VS_EXTRA_LEFT_3,
+	// VS_EXTRA_RIGHT_3
+	for (int x = -2; x < 9; x++)
+	{
+		//	if (!VEHICLE::IS_VEHICLE_SEAT_FREE(lastDriven, x)) //this function don't work.
+		Ped pedinSeat = VEHICLE::GET_PED_IN_VEHICLE_SEAT(vehicleID, x); // returns null/0 if seat don't have anyone.
+		if (pedinSeat != NULL) {
+			if (pedinSeat == PLAYER::PLAYER_PED_ID())
+			{
+				continue;
+			}
 
+			ENTITY::SET_ENTITY_COORDS(pedinSeat, coordX, coordY, coordZ, true, true, true, true);
+			break;
+		}
+	}
+}
 //  =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=
 //  =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0= UPDATE =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0
 //  =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=
@@ -1329,6 +1369,8 @@ void Update()
 				ENTITY::SET_ENTITY_COORDS(pPedID, SimeonTPoint.x, SimeonTPoint.y, SimeonTPoint.z, false, false, false, false); // warp to safe zone.
 			}
 			VEHICLE::_TASK_BRING_VEHICLE_TO_HALT(lastDriven, 15, 5, true); // Stop vehicle
+			// Remove any peds from the vehicle.
+			WarpPedsInsideVehicleTo(lastDriven, SimeonTPoint.x, SimeonTPoint.y, SimeonTPoint.z);
 			break;
 		case Lighthouse:
 			if (!IsInFlyingVehiclesList(lastValidVehicle))
@@ -1337,6 +1379,7 @@ void Update()
 				WAIT(1000);
 			}
 			ENTITY::SET_ENTITY_COORDS(pPedID, LighthouseTPoint.x, LighthouseTPoint.y, LighthouseTPoint.z, false, false, false, false); // warp to safe zone.
+			WarpPedsInsideVehicleTo(lastDriven, LighthouseTPoint.x, LighthouseTPoint.y, LighthouseTPoint.z);
 			break;
 		case Beach:
 			// Parking lot abuse detection
@@ -1346,10 +1389,12 @@ void Update()
 				if (IsInFlyingVehiclesList(lastValidVehicle))
 				{
 					ENTITY::SET_ENTITY_COORDS(pPedID, BeachTPoint.x, BeachTPoint.y, BeachTPoint.z, 0, 0, 0, 0);
+					WarpPedsInsideVehicleTo(lastDriven, BeachTPoint.x, BeachTPoint.y, BeachTPoint.z);
 				}
 				else
 				{
 					ENTITY::SET_ENTITY_COORDS(pPedID, CurrentCoords.x, CurrentCoords.y, CurrentCoords.z + 1, 0x0, 0x0, 0x0, 0x0);
+					WarpPedsInsideVehicleTo(lastDriven, BeachTPoint.x, BeachTPoint.y, BeachTPoint.z);
 				}
 
 				WAIT(1000);
@@ -1367,9 +1412,12 @@ void Update()
 				{
 					ENTITY::SET_ENTITY_COORDS(pPedID, BeachTPoint.x, BeachTPoint.y, BeachTPoint.z, 0, 0, 0, 0);
 				}
+				// Remove any peds from the vehicle.
+				WarpPedsInsideVehicleTo(lastDriven, BeachTPoint.x, BeachTPoint.y, BeachTPoint.z);
 			}
 
 			VEHICLE::_TASK_BRING_VEHICLE_TO_HALT(lastDriven, 15, 5, true); // Stop vehicle
+			
 			break;
 		case Pier:
 			if (IsInFlyingVehiclesList(lastValidVehicle))
@@ -1377,6 +1425,8 @@ void Update()
 				ENTITY::SET_ENTITY_COORDS(pPedID, PierTPoint.x, PierTPoint.y, PierTPoint.z, 0, 0, 0, 0);
 			}
 			VEHICLE::_TASK_BRING_VEHICLE_TO_HALT(lastDriven, 15, 5, true); // Stop vehicle
+			// Remove any peds from the vehicle.
+			WarpPedsInsideVehicleTo(lastDriven, PierTPoint.x, PierTPoint.y, PierTPoint.z );
 			break;
 		}
 
@@ -1385,6 +1435,7 @@ void Update()
 		//ENTITY::SET_ENTITY_AS_MISSION_ENTITY(lastDriven, true, true); // set current vehicle as a mission entity, so we can delete after.
 		currentStage = ScriptStage::DeleteVehicle;
 		WAIT(500);
+
 		break;
 	}
 	case DeleteVehicle:
@@ -1393,74 +1444,24 @@ void Update()
 		VEHICLE::DETACH_VEHICLE_FROM_TRAILER(PLAYER::GET_PLAYERS_LAST_VEHICLE());
 		Vehicle lastDriven = PLAYER::GET_PLAYERS_LAST_VEHICLE();
 		ENTITY::SET_ENTITY_AS_MISSION_ENTITY(lastDriven, true, true);
-		// VS_ANY_PASSENGER = -2, //Any passenger seat
-		// VS_DRIVER = -1, // Drivers seat
-		// VS_FRONT_RIGHT = 0, // Front Right seat
-		// VS_BACK_LEFT, //Back left 	
-		// VS_BACK_RIGHT, //Back right
-		// VS_EXTRA_LEFT_1,
-		// VS_EXTRA_RIGHT_1,
-		// VS_EXTRA_LEFT_2,
-		// VS_EXTRA_RIGHT_2,
-		// VS_EXTRA_LEFT_3,
-		// VS_EXTRA_RIGHT_3
-		bool someoneStillInCar = false;
-		for (int x = -2; x < 9; x++)
-		{
-			//	if (!VEHICLE::IS_VEHICLE_SEAT_FREE(lastDriven, x)) //this function don't work.
-			Ped pedinSeat = VEHICLE::GET_PED_IN_VEHICLE_SEAT(lastDriven, x); // returns null/0 if seat don't have anyone.
-			if (pedinSeat != NULL) {
-				if (pedinSeat == pPedID)
-				{
-					someoneStillInCar = true;
-					continue;
-				}
-
-				//flags: WARP PED | DONT CLOSE DOOR | DONT WAIT FOR VEHICLE TO STOP
-				AI::TASK_LEAVE_VEHICLE(pedinSeat, lastDriven, 16 | 256 | 64);
-				someoneStillInCar = true;
-				break;
-			}
-		}
-
-		if (someoneStillInCar) {
-			//Someone still is in the car, emergency remove.
-			for (int x = -2; x < 9; x++)
-			{
-				//	if (!VEHICLE::IS_VEHICLE_SEAT_FREE(lastDriven, x)) //this function don't work.
-				Ped pedinSeat = VEHICLE::GET_PED_IN_VEHICLE_SEAT(lastDriven, x); // returns null/0 if seat don't have anyone.
-				if (pedinSeat != NULL) {
-					if (pedinSeat == pPedID)
-					{
-						continue;
-					}
-
-
-					Vector3 pedCoords = ENTITY::GET_ENTITY_COORDS(pedinSeat, false);
-					ENTITY::SET_ENTITY_COORDS(pedinSeat, pedCoords.x, pedCoords.y, pedCoords.z, true, true, true, true);
-					break;
-				}
-			}
-			break;
-		}
-
 		// Car is probably free to delete;
-		if (!PED::IS_PED_IN_ANY_VEHICLE(pPedID, true)) {
-			std::string deliMsg;
-			deliMsg += "Vehicle Delivered!\n";
-			deliMsg += "(";
-			deliMsg += lastValidVehicle;
-			deliMsg += ")";
+		if (!PED::IS_PED_IN_ANY_VEHICLE(pPedID, true)) 
+		{
 			VEHICLE::DETACH_VEHICLE_FROM_ANY_TOW_TRUCK(lastDriven);
 			QuickAddToDelivered(lastValidVehicle);
 			gameMenu->UpdateVehiclesList();
 			// BUG: if player is in a hangout, for some random reason the script sets the last driven to null and the vehicle never gets deleted.
 			// Set position from last driven vehicle really far from the player to force mission fails and force to clean the vehicle from the memory in case is not destroyed.
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(lastDriven, 10000, 10000, 5000, true, true, true);
+			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(PLAYER::GET_PLAYERS_LAST_VEHICLE(), 1000.0f, -1000.0f, 1000.0f, false, false, true);
 			VEHICLE::EXPLODE_VEHICLE(lastDriven, false, true);
 			ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&lastDriven);
 			//Last Try to remove the vehicle.
 			Vehicle toDelete = PLAYER::GET_PLAYERS_LAST_VEHICLE();
+			std::string deliMsg;
+			deliMsg += "Vehicle Delivered!\n";
+			deliMsg += "(";
+			deliMsg += lastValidVehicle;
+			deliMsg += ")";
 			VEHICLE::DELETE_VEHICLE(&toDelete);
 			CreateHelpText((char*)deliMsg.c_str(), true);
 			CreateMissingCarsTXTFile();
@@ -1480,6 +1481,16 @@ void ScriptMain()
 	lightHouseCoords.x = -1831.544f;
 	lightHouseCoords.y = -1189.259f;
 	lightHouseCoords.z = 27.16121f;
+
+	//Check which version of the game the mod is installed
+	HMODULE Module = GetModuleHandleA(NULL);
+	char modulePath[260];
+	GetModuleFileNameA(Module, modulePath, 260);
+	if (std::string(modulePath).find("GTA5_Enhanced.exe") != std::string::npos)
+	{
+		IsEnhanced = true;
+	}
+
 	//Just to make sure everything is correctly loaded.
 	LoadHookPointers();
 	//Settings
@@ -1508,7 +1519,7 @@ void ScriptMain()
 	}
 	gameMenu->UpdateVehiclesList();
 
-
+	//The Main Loop
 	while (true) {
 		Update();
 		WAIT(0);

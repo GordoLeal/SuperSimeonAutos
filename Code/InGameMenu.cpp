@@ -293,19 +293,19 @@ void InGameMenu::DrawMenu()
 		if (MissingSelection >= missingVehiclesVector.size())
 			MissingSelection = missingVehiclesVector.size() - 1;
 
-		DrawMissingVehicleSelection(menuPosX, anchorListStart, MissingSelection - 3, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + selectionH, MissingSelection - 2, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 2), MissingSelection - 1, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 3), MissingSelection, menuW, selectionH, true);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 4), MissingSelection + 1, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 5), MissingSelection + 2, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 6), MissingSelection + 3, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 7), MissingSelection + 4, menuW, selectionH, false);
-		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 8), MissingSelection + 5, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart, MissingSelection - 4, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + selectionH, MissingSelection - 3, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 2), MissingSelection - 2, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 3), MissingSelection - 1, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 4), MissingSelection, menuW, selectionH, true);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 5), MissingSelection + 1, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 6), MissingSelection + 2, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 7), MissingSelection + 3, menuW, selectionH, false);
+		DrawMissingVehicleSelection(menuPosX, anchorListStart + (selectionH * 8), MissingSelection + 4, menuW, selectionH, false);
 		if (allowEditVehicles)
 		{
 			DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 9), menuW, selectionH, 0, 0, 0, 255);
-			DrawBasicText((char*)"[EDIT MODE] Press ENTER to add this vehicle.", menuPosX + 0.0075f, anchorListStart + (selectionH * 9) + 0.0073f, 0.27f, 0);
+			DrawBasicText((char*)"[EDIT MODE] Press ENTER to add this vehicle.", menuPosX + (menuW / 2), anchorListStart + (selectionH * 9) + 0.0073f, 0.27f, 0,0);
 		}
 		break;
 
@@ -318,18 +318,19 @@ void InGameMenu::DrawMenu()
 		if (DeliveredSelection >= deliveredVehiclesVector.size())
 			DeliveredSelection = deliveredVehiclesVector.size() - 1;
 
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart, DeliveredSelection - 2, menuW, selectionH, false);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + selectionH, DeliveredSelection - 1, menuW, selectionH, false);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 2), DeliveredSelection, menuW, selectionH, true);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 3), DeliveredSelection + 1, menuW, selectionH, false);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 4), DeliveredSelection + 2, menuW, selectionH, false);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 5), DeliveredSelection + 3, menuW, selectionH, false);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 6), DeliveredSelection + 4, menuW, selectionH, false);
-		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 7), DeliveredSelection + 5, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart, DeliveredSelection - 4, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + selectionH, DeliveredSelection - 3, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 2), DeliveredSelection - 2, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 3), DeliveredSelection - 1, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 4), DeliveredSelection, menuW, selectionH, true);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 5), DeliveredSelection + 1, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 6), DeliveredSelection + 2, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 7), DeliveredSelection + 3, menuW, selectionH, false);
+		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + (selectionH * 8), DeliveredSelection + 4, menuW, selectionH, false);
 		if (allowEditVehicles)
 		{
-			DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 8), menuW, selectionH, 0, 0, 0, 255);
-			DrawBasicText((char*)"[EDIT MODE] Press ENTER to remove this vehicle.", menuPosX + 0.0075f, anchorListStart + (selectionH * 8) + 0.0073f, 0.27f, 0);
+			DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 9), menuW, selectionH, 0, 0, 0, 255);
+			DrawBasicText((char*)"[EDIT MODE] Press ENTER to remove this vehicle.", menuPosX +(menuW / 2), anchorListStart + (selectionH * 8) + 0.0073f, 0.27f, 0,0);
 		}
 		break;
 
