@@ -202,7 +202,7 @@ SaveSystem::ErrSave SaveSystem::GetIntPointerFromPointer(int** inB, intptr_t* po
 }
 
 
-SaveSystem::ErrSave SaveSystem::GetPointerToLastLoadedSlotNumber(intptr_t* pointerBuffer)
+SaveSystem::ErrSave SaveSystem::GetPointerToLastLoadedSlotNumber(intptr_t* pointerBuffer, bool IsEnhanced)
 {
 	//GTA Handle
 	HANDLE gtaProcess = GetCurrentProcess();
@@ -232,25 +232,39 @@ SaveSystem::ErrSave SaveSystem::GetPointerToLastLoadedSlotNumber(intptr_t* point
 	// the other gets set when the player press confirm.
 	// We are going to use the one that gets set after the player hit the confirmation button, since it seems more stable.
 	// if the player just loaded the game that variable is gonna be -1, in this case i need to check the last modified Save file.
+	uintptr_t addressToPatern;
+	if (IsEnhanced)
+	{
+		//             \/(??) address to RIP offset.
+		// 31 F6 89 05 ?? ?? ?? ?? 48 83 F8
+		//                         /\ (48) address to next instruction (not required to be part of the pattern just coincidence)
+		const unsigned char MemorySlotPattern[] = "\x31\xF6\x89\x05\x00\x00\x00\x00\x48\x83\xF8";
+		const char MemorySlotMask[] = "xxxx????xxx";
+		addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	}
+	else
+	{
+		//                         \/(??) address to RIP offset.
+		// 89 1D ?? ?? ?? ?? 89 05 ?? ?? ?? ?? 83
+		//                                     /\ (83) address to next instruction (not required to be part of the pattern just coincidence)
+		const unsigned char MemorySlotPattern[] = "\x89\x1D\x00\x00\x00\x00\x89\x05\x00\x00\x00\x00\x83";
+		const char MemorySlotMask[] = "xx????xx????x";
+		addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	}
 
-	//                         \/(??) address to RIP offset.
-	// 89 1D ?? ?? ?? ?? 89 05 ?? ?? ?? ?? 83
-	//                                     /\ (83) address to next instruction (not required to be part of the pattern just coincidence)
-	const unsigned char MemorySlotPattern[] = "\x89\x1D\x00\x00\x00\x00\x89\x05\x00\x00\x00\x00\x83";
-	const char MemorySlotMask[] = "xx????xx????x";
-
-	uintptr_t addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
-	if (addressToPatern == 0x0) {
+	if (addressToPatern == 0x0)
+	{
+		OutputDebugStringA("Was not possible to find address GetPointerToLastLoadedSlotNumber");
 		return SaveSystem::ErrSave::AddressToPaternNotFound;
 	}
 	//GTAV is x64, RIP-relative address, so i need to do a bit extra math for the correct address.
-	int ripOffset = *reinterpret_cast<int*>(addressToPatern + 8);
-	uintptr_t addressNextCall = addressToPatern + 12;
+	int ripOffset = *reinterpret_cast<int*>(addressToPatern + (IsEnhanced ? 4 : 8));
+	uintptr_t addressNextCall = addressToPatern + (IsEnhanced ? 8 : 12);
 	*pointerBuffer = addressNextCall + ripOffset;
 	return SaveSystem::SaveDone;
 }
 
-SaveSystem::ErrSave SaveSystem::GetPointerToBeLoadedSaveFile(intptr_t* pointerBuffer)
+SaveSystem::ErrSave SaveSystem::GetPointerToBeLoadedSaveFile(intptr_t* pointerBuffer, bool IsEnhanced)
 {
 	//GTA Handle
 	HANDLE gtaProcess = GetCurrentProcess();
@@ -267,29 +281,40 @@ SaveSystem::ErrSave SaveSystem::GetPointerToBeLoadedSaveFile(intptr_t* pointerBu
 	uintptr_t baseAddress = reinterpret_cast<uintptr_t>(modInfo.lpBaseOfDll);
 	size_t moduleSize = modInfo.SizeOfImage;
 
-	// GTAV saves a string of the save file that needs to be read on the next load.
+	// GTAV saves a string of the save file that needs to be read on the next load. EX:SGTA50003
 	// For mission replays it sets to MSRP0000 right at the start of the mission replay.
 	// the value stays until a save file load is called or another mission replay starts.
 	// we already know when a mission replay starts, can use this to know if it ended.
-
-	//                               \/(??) address to RIP offset.
-	// 48 8D 15 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? F7 D8
-	//                                           /\ (E8) address to next instruction (not required to be part of the pattern just coincidence)
-	const unsigned char MemorySlotPattern[] = "\x48\x8D\x15\x00\x00\x00\x00\x48\x8D\x0D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xF7\xD8";
-	const char MemorySlotMask[] = "xxx????xxx????x????xx";
-
-	uintptr_t addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	uintptr_t addressToPatern;
+	if (IsEnhanced)
+	{
+		//          \/(??) address to RIP offset. (3)
+		// 48 8D 0D ?? ?? ?? ?? 89 74 24 20 4C 8D 05
+		//                      /\ (89) address to next instruction
+		const unsigned char MemorySlotPattern[] = "\x48\x8D\x0D\x00\x00\x00\x00\x89\x74\x24\x00\x4C\x8D\x05";
+		const char MemorySlotMask[] = "xxx????xxx?xxx";
+		addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	}
+	else
+	{
+		//                               \/(??) address to RIP offset.
+		// 48 8D 15 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? F7 D8
+		//                                           /\ (E8) address to next instruction (not required to be part of the pattern just coincidence)
+		const unsigned char MemorySlotPattern[] = "\x48\x8D\x15\x00\x00\x00\x00\x48\x8D\x0D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xF7\xD8";
+		const char MemorySlotMask[] = "xxx????xxx????x????xx";
+		addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	}
 	if (addressToPatern == 0x0) {
 		return SaveSystem::ErrSave::AddressToPaternNotFound;
 	}
 	//GTAV is x64, RIP-relative address, so i need to do a bit extra math for the correct address.
-	int ripOffset = *reinterpret_cast<int*>(addressToPatern + 10);
-	uintptr_t addressNextCall = addressToPatern + 14;
+	int ripOffset = *reinterpret_cast<int*>(addressToPatern + (IsEnhanced ? 3 : 10));
+	uintptr_t addressNextCall = addressToPatern + (IsEnhanced ? 7 : 14);
 	*pointerBuffer = addressNextCall + ripOffset;
 	return SaveSystem::SaveDone;
 }
 
-SaveSystem::ErrSave SaveSystem::GetPointerToIsSaveHappening(intptr_t* pointerBuffer)
+SaveSystem::ErrSave SaveSystem::GetPointerToIsSaveHappening(intptr_t* pointerBuffer, bool IsEnhanced)
 {
 	//GTA Handle
 	HANDLE gtaProcess = GetCurrentProcess();
@@ -305,26 +330,34 @@ SaveSystem::ErrSave SaveSystem::GetPointerToIsSaveHappening(intptr_t* pointerBuf
 
 	uintptr_t baseAddress = reinterpret_cast<uintptr_t>(modInfo.lpBaseOfDll);
 	size_t moduleSize = modInfo.SizeOfImage;
+	uintptr_t addressToPatern;
 
-	// GTAV saves a string of the save file that needs to be read on the next load.
-	// For mission replays it sets to MSRP0000 right at the start of the mission replay.
-	// the value stays until a save file load is called or another mission replay starts.
-	// we already know when a mission replay starts, can use this to know if it ended.
+	if (IsEnhanced) {
 
-	//                               \/(??) address to RIP offset.
-	//41 B8 ? ? ? ? E8 ? ? ? ? 89 1D ? ? ? ? 48 83 C4 20
-	//                                       /\ (E8) address to next instruction (not required to be part of the pattern just coincidence)
-	const unsigned char MemorySlotPattern[] = "\x41\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x89\x1D\x00\x00\x00\x00\x48\x83\xC4\x20";
-	const char MemorySlotMask[] = "xx????x????xx????xxxx";
+		//                                             \/(??) address to RIP offset.
+		//48 8D 05 ?? ?? ?? ?? 4C 01 C8 C6 00 00 89 15 ?? ?? ?? ?? C3
+		//														   /\ (E8) address to next instruction (not required to be part of the pattern just coincidence)
+		const unsigned char MemorySlotPattern[] = "\x48\x8D\x05\x00\x00\x00\x00\x4C\x01\xC8\xC6\x00\x00\x89\x15\x00\x00\x00\x00\xC3";
+		const char MemorySlotMask[] = "xxx????xxxxxxxx????x";
+		addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	}
+	else
+	{
+		//                               \/(??) address to RIP offset.
+		//41 B8 ? ? ? ? E8 ? ? ? ? 89 1D ? ? ? ? 48 83 C4 20
+		//                                       /\ (E8) address to next instruction (not required to be part of the pattern just coincidence)
+		const unsigned char MemorySlotPattern[] = "\x41\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x89\x1D\x00\x00\x00\x00\x48\x83\xC4\x20";
+		const char MemorySlotMask[] = "xx????x????xx????xxxx";
+		addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
+	}
 
-	uintptr_t addressToPatern = GetAddressFromPattern(baseAddress, moduleSize, MemorySlotPattern, MemorySlotMask);
 	if (addressToPatern == 0x0)
 	{
 		return SaveSystem::ErrSave::AddressToPaternNotFound;
 	}
 	//GTAV is x64, RIP-relative address, so i need to do a bit extra math for the correct address.
-	int ripOffset = *reinterpret_cast<int*>(addressToPatern + 13);
-	uintptr_t addressNextCall = addressToPatern + 17;
+	int ripOffset = *reinterpret_cast<int*>(addressToPatern + (IsEnhanced ? 15 : 13));
+	uintptr_t addressNextCall = addressToPatern + (IsEnhanced ? 19 : 17);
 	*pointerBuffer = addressNextCall + ripOffset;
 	return SaveSystem::SaveDone;
 }

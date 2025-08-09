@@ -10,7 +10,7 @@ void InGameMenu::DrawReactOnTopLeft(float x, float y, float width, float height,
 	GRAPHICS::DRAW_RECT(x + (width / 2), y + (height / 2), width, height, red, green, blue, alpha);
 }
 
-void InGameMenu::DrawBasicText(char* text, float x, float y, float scaleY, int font)
+void InGameMenu::DrawBasicText(char* text, float x, float y, float scaleY, int font, int align = 1)
 {
 	UI::SET_TEXT_FONT(font);
 	UI::SET_TEXT_SCALE(0, scaleY);
@@ -20,7 +20,7 @@ void InGameMenu::DrawBasicText(char* text, float x, float y, float scaleY, int f
 	//	FONT_LEFT,= 1
 	//	FONT_RIGHT = 2
 	//	FONT_JUSTIFY= 3
-	UI::SET_TEXT_JUSTIFICATION(1);
+	UI::SET_TEXT_JUSTIFICATION(align);
 	UI::SET_TEXT_EDGE(0, 0, 0, 0, 0);
 	UI::_SET_TEXT_ENTRY((char*)"STRING");
 	UI::_ADD_TEXT_COMPONENT_STRING(text);
@@ -190,7 +190,16 @@ void InGameMenu::DrawMenu()
 
 	//Top Banner
 	DrawReactOnTopLeft(menuPosX, menuPosY, menuW, mainBannerH, 110, 0, 255, 255);
-	DrawBasicText((char*)"SUPER SIMEON AUTOS", menuPosX + 0.005f, menuPosY + 0.015f, 0.5f, 7);
+
+	UI::SET_TEXT_FONT(7);
+	UI::SET_TEXT_SCALE(0, 0.6f);
+	UI::SET_TEXT_COLOUR(255, 255, 255, 255);
+	UI::SET_TEXT_DROPSHADOW(10, 1, 1, 1, 255);
+	UI::SET_TEXT_JUSTIFICATION(0);
+	UI::SET_TEXT_EDGE(0, 0, 0, 0, 0);
+	UI::_SET_TEXT_ENTRY((char*)"STRING");
+	UI::_ADD_TEXT_COMPONENT_STRING((char*)"SUPER SIMEON AUTOS");
+	UI::_DRAW_TEXT(menuPosX + (menuW / 2), menuPosY + 0.010f);
 
 	float anchorSecBanner = menuPosY + mainBannerH;
 
@@ -243,14 +252,14 @@ void InGameMenu::DrawMenu()
 			MainMenuSelection = 2;
 
 		DrawReactOnTopLeft(menuPosX, anchorSecBanner, menuW, secondaryBannerH, 0, 0, 0, 255);
-		DrawBasicText((char*)"Main Menu", menuPosX + 0.005f, anchorSecBanner, 0.4f, 0);
+		DrawBasicText((char*)"Main Menu", menuPosX + (menuW / 2), anchorSecBanner, 0.4f, 0, 0);
 
 		DrawBasicSelection(menuPosX, anchorListStart, (char*)"Missing Vehicles", menuW, selectionH, MainMenuSelection == 0 ? true : false);
 		DrawBasicSelection(menuPosX, anchorListStart + selectionH, (char*)"Delivered Vehicles", menuW, selectionH, MainMenuSelection == 1 ? true : false);
 		DrawBasicSelection(menuPosX, anchorListStart + (selectionH * 2), (char*)"Settings", menuW, selectionH, MainMenuSelection == 2 ? true : false);
 		//help 1
 		DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 3), menuW, selectionH, 0, 0, 0, 255);
-		DrawBasicText((char*)"Use the UP/DOWN arrow keys to move.", menuPosX + 0.0075f,anchorListStart + (selectionH * 3) + 0.0075f, 0.27f, 0);
+		DrawBasicText((char*)"Use UP/DOWN arrow keys to move.", menuPosX + 0.0075f, anchorListStart + (selectionH * 3) + 0.0075f, 0.27f, 0);
 		//Help 2
 		DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 4), menuW, selectionH, 0, 0, 0, 255);
 		DrawBasicText((char*)"Press ENTER to confirm", menuPosX + 0.0075f, anchorListStart + (selectionH * 4) + 0.0075f, 0.27f, 0);
@@ -278,7 +287,7 @@ void InGameMenu::DrawMenu()
 	case InGameMenu::Missing:
 
 		DrawReactOnTopLeft(menuPosX, anchorSecBanner, menuW, secondaryBannerH, 0, 0, 0, 255);
-		DrawBasicText((char*)"Missing Vehicles", menuPosX + 0.005f, anchorSecBanner, 0.4f, 0);
+		DrawBasicText((char*)"Missing Vehicles", menuPosX + (menuW / 2), anchorSecBanner, 0.4f, 0, 0);
 		if (MissingSelection < 0)
 			MissingSelection = 0;
 		if (MissingSelection >= missingVehiclesVector.size())
@@ -296,13 +305,13 @@ void InGameMenu::DrawMenu()
 		if (allowEditVehicles)
 		{
 			DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 9), menuW, selectionH, 0, 0, 0, 255);
-			DrawBasicText((char*)"[EDIT MODE] Press ENTER to add this vehicle.",menuPosX+0.0075f, anchorListStart + (selectionH * 9)+0.0075f,0.27f,0);
+			DrawBasicText((char*)"[EDIT MODE] Press ENTER to add this vehicle.", menuPosX + 0.0075f, anchorListStart + (selectionH * 9) + 0.0073f, 0.27f, 0);
 		}
 		break;
 
 	case InGameMenu::Delivered:
 		DrawReactOnTopLeft(menuPosX, anchorSecBanner, menuW, secondaryBannerH, 0, 0, 0, 255);
-		DrawBasicText((char*)"Delivered Vehicles", menuPosX + 0.005f, anchorSecBanner, 0.4f, 0);
+		DrawBasicText((char*)"Delivered Vehicles", menuPosX + (menuW / 2), anchorSecBanner, 0.4f, 0, 0);
 
 		if (DeliveredSelection < 0)
 			DeliveredSelection = 0;
@@ -320,7 +329,7 @@ void InGameMenu::DrawMenu()
 		if (allowEditVehicles)
 		{
 			DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 8), menuW, selectionH, 0, 0, 0, 255);
-			DrawBasicText((char*)"[EDIT MODE] Press ENTER to remove this vehicle.", menuPosX + 0.0075f, anchorListStart + (selectionH * 8) + 0.0075f, 0.27f, 0);
+			DrawBasicText((char*)"[EDIT MODE] Press ENTER to remove this vehicle.", menuPosX + 0.0075f, anchorListStart + (selectionH * 8) + 0.0073f, 0.27f, 0);
 		}
 		break;
 
@@ -329,7 +338,7 @@ void InGameMenu::DrawMenu()
 		float configOptionH = 0.030f;
 		float bothH = configSelectionH + configOptionH;
 		DrawReactOnTopLeft(menuPosX, anchorSecBanner, menuW, secondaryBannerH, 0, 0, 0, 255);
-		DrawBasicText((char*)"Settings", menuPosX + 0.005f, anchorSecBanner, 0.4f, 0);
+		DrawBasicText((char*)"Settings", menuPosX + (menuW / 2), anchorSecBanner, 0.4f, 0,0);
 		float configsAmount = 5;
 		if (ConfigSelection < 0)
 			ConfigSelection = 0;
@@ -341,11 +350,11 @@ void InGameMenu::DrawMenu()
 		DrawConfigBoolSelection(menuPosX, anchorListStart + (bothH * 2), menuW, configSelectionH, configOptionH, true, ConfigSelection);
 		DrawConfigBoolSelection(menuPosX, anchorListStart + (bothH * 3), menuW, configSelectionH, configOptionH, false, ConfigSelection + 1);
 		DrawConfigBoolSelection(menuPosX, anchorListStart + (bothH * 4), menuW, configSelectionH, configOptionH, false, ConfigSelection + 2);
-		DrawReactOnTopLeft(menuPosX, anchorListStart + (bothH * 5), menuW, 0.0625f, 0, 0, 0, 255);
+		DrawReactOnTopLeft(menuPosX, anchorListStart + (bothH * 5), menuW, 0.0626f, 0, 0, 0, 255);
 		DrawBasicText((ConfigSelection >= 0 && ConfigSelection < settingsVector.size()) ? (char*)settingsVector[ConfigSelection].tip : (char*)"",
 			menuPosX + 0.005f,
 			anchorListStart + (bothH * 5),
-			0.3f,
+			0.29f,
 			0);
 
 		break;
@@ -405,7 +414,7 @@ void InGameMenu::DrawMissingVehicleSelection(float x, float y, int value, float 
 			DrawBasicTextWithColor((char*)totalname.c_str(), x + 0.005f, y + 0.0035f, 0.35f, 0, 0, 0, 0, 255);
 			// if is selected and allow edit is available.
 			// enable the possibility to request an edit
-			if (allowEditVehicles && CONTROLS::IS_CONTROL_JUST_PRESSED(0, eControl::ControlFrontendAccept)) 
+			if (allowEditVehicles && CONTROLS::IS_CONTROL_JUST_PRESSED(0, eControl::ControlFrontendAccept))
 			{
 				RequestVehicleToBeAdded((char*)missingVehiclesVector[value]);
 			}

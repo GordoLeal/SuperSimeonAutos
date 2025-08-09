@@ -15,7 +15,7 @@ class InGameMenu
 {
 public:
 	static void DrawReactOnTopLeft(float x, float y, float width, float height, int red, int green, int blue, int alpha);
-	static void DrawBasicText(char* text, float x, float y, float scaleY, int font);
+	static void DrawBasicText(char* text, float x, float y, float scaleY, int font, int align);
 	static void DrawBasicTextWithColor(char* text, float x, float y, float scaleY, int font, int red, int green, int blue, int alpha);
 	static void DrawBasicTextWithColorDS(char* text, float x, float y, float scaleY, int font, int red, int green, int blue, int alpha);
 	void OpenMenu();

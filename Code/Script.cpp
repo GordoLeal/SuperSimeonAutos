@@ -105,26 +105,31 @@ void LoadHookPointers() {
 
 	//Saves Folder Path
 	std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
-
+	bool IsEnhanced = false;
 	//1.27 is only available in legacy, use default.
 	if (gameVersionStr == "1.27")
 	{
-		SaveSystem::GetSaveFilePath(false, false ,&pathToSaveFolder);
+		SaveSystem::GetSaveFilePath(false, false, &pathToSaveFolder);
 	}
 	else
 	{
 		char modulePath[260];
 		GetModuleFileNameA(Module, modulePath, 260);
-		if (std::string(modulePath).find("GTAV_Enhanced.exe") != std::string::npos)
-			SaveSystem::GetSaveFilePath(true, true,&pathToSaveFolder);
+		if (std::string(modulePath).find("GTA5_Enhanced.exe") != std::string::npos)
+		{
+			OutputDebugString("ENHANCED DETECTED");
+			SaveSystem::GetSaveFilePath(true, true, &pathToSaveFolder);
+			IsEnhanced = true;
+		}
 		else
 			SaveSystem::GetSaveFilePath(true, false, &pathToSaveFolder);
 	}
 
 	// Pattern Finding
 	// Number of last Loaded Save slot
-	if (SaveSystem::GetPointerToLastLoadedSlotNumber(&pSavedSlotNumberPTR) == SaveSystem::ErrSave::SaveDone)
+	if (SaveSystem::GetPointerToLastLoadedSlotNumber(&pSavedSlotNumberPTR, IsEnhanced) == SaveSystem::ErrSave::SaveDone)
 	{
+
 		if (SaveSystem::GetLastReadSlotNumber(&LastLoadedSaveSlotNumber, &pSavedSlotNumberPTR) != SaveSystem::ErrSave::SaveDone)
 		{
 			OutputDebugString("something happened address could not be loaded... (getLastReadSlotNumber)");
@@ -138,8 +143,9 @@ void LoadHookPointers() {
 		CreateHelpText((char*)"something happened and pointers could not be loaded... (getPointerToLastLoadedSlot)", true);
 		return;
 	}
+
 	//char* of to be loaded Save File.
-	if (SaveSystem::GetPointerToBeLoadedSaveFile(&pToBeLoadedSaveFilePTR) == SaveSystem::ErrSave::SaveDone) {
+	if (SaveSystem::GetPointerToBeLoadedSaveFile(&pToBeLoadedSaveFilePTR, IsEnhanced) == SaveSystem::ErrSave::SaveDone) {
 		if (SaveSystem::GetToBeReadSaveFile(&ToBeLoadedSaveFile, &pToBeLoadedSaveFilePTR) != SaveSystem::ErrSave::SaveDone) {
 			OutputDebugString("something happened address could not be loaded... (ToBeLoadedSaveFile)");
 			CreateHelpText((char*)"something happened address could not be loaded... (ToBeLoadedSaveFile)", true);
@@ -153,7 +159,7 @@ void LoadHookPointers() {
 		return;
 	}
 
-	if (SaveSystem::GetPointerToIsSaveHappening(&pIsSaveMenuOpen) == SaveSystem::ErrSave::SaveDone) {
+	if (SaveSystem::GetPointerToIsSaveHappening(&pIsSaveMenuOpen, IsEnhanced) == SaveSystem::ErrSave::SaveDone) {
 		if (SaveSystem::GetIntPointerFromPointer(&IsGameSaving, &pIsSaveMenuOpen) != SaveSystem::ErrSave::SaveDone) {
 			OutputDebugString("something happened address could not be loaded...(ToIsSaveHappening)");
 			CreateHelpText((char*)"something happened address could not be loaded...(ToIsSaveHappening)", true);
@@ -1021,6 +1027,7 @@ void LighthouseDecoration() {
 //  =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0= UPDATE =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0
 //  =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=0=
 
+int daytime = 0;
 void Update()
 {
 	//Funny lighthouse made by Gogsi

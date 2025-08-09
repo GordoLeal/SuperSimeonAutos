@@ -35,7 +35,7 @@ public:
 	/// <returns></returns>
 	static ErrSave SaveProgress(std::list<char*> vehicles, bool isCurrentPatch, std::wstring SaveFolderPath);
 	static ErrSave SaveProgressForReplay(std::list<char*> vehicles, bool isCurrentPatch, std::wstring SaveFolderPath);
-	static ErrSave GetPointerToBeLoadedSaveFile(intptr_t* pointerBuffer);
+	static ErrSave GetPointerToBeLoadedSaveFile(intptr_t* pointerBuffer, bool Is);
 	static ErrSave LoadProgressForFirstTime(std::wstring saveFolderPath, std::list<char*>& deliveredVehiclesFromSave);
 	/// <summary>
 	/// 
@@ -56,9 +56,9 @@ public:
 	/// <summary>
 	/// Try get the pointer to the address of the global variable that holds the int value for the last loaded slot.
 	/// </summary>
-	static ErrSave GetPointerToLastLoadedSlotNumber(intptr_t* pointerBuffer);
+	static ErrSave GetPointerToLastLoadedSlotNumber(intptr_t* pointerBuffer, bool IsEnhanced);
 
-	static ErrSave GetPointerToIsSaveHappening(intptr_t* pointerBuffer);
+	static ErrSave GetPointerToIsSaveHappening(intptr_t* pointerBuffer, bool IsEnhanced);
 	static ErrSave GetIntPointerFromPointer(int** inB, intptr_t* pointer);
 	/// <summary>
 	/// returns the path to the save file folder
