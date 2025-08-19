@@ -53,6 +53,7 @@ Settings gSettings;
 ScriptStage currentStage = ScriptStage::CheckCurrentVehicle;
 bool OrtegaTrailerDelivered;
 bool IsEnhanced = false;
+bool IsCurrentPatch = false;
 // Mission specific
 bool DisableInArmenian = false;
 bool DisableInDLG = false;
@@ -104,18 +105,11 @@ void LoadHookPointers() {
 	DWORD sizeOfImage = ntHeaders->OptionalHeader.SizeOfImage;
 	EndOfOurModule = OurModuleBase + sizeOfImage;
 
-	//Saves Folder Path
-	std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
-	
+	////Saves Folder Path
+	//std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
+
 	//1.27 is only available in legacy, use default.
-	if (gameVersionStr == "1.27")
-	{
-		SaveSystem::GetSaveFilePath(false, false, &pathToSaveFolder);
-	}
-	else
-	{
-		SaveSystem::GetSaveFilePath(true, IsEnhanced, &pathToSaveFolder);
-	}
+	SaveSystem::GetSaveFilePath(IsCurrentPatch, IsEnhanced, &pathToSaveFolder);
 
 	// Pattern Finding
 	// Number of last Loaded Save slot
@@ -176,18 +170,21 @@ void FillFullVehicleList()
 	{
 		fullVehicleList.push_back(a);
 	}
-	if (IsEnhanced)
+
+	if (IsEnhanced || IsCurrentPatch)
 	{
 		for (const char* aEnh : CurrentPatch_Cars)
 		{
 			fullVehicleList.push_back(aEnh);
 		}
-		if (gSettings.EnableFlyingVehicles)
+
+	}
+
+	if (gSettings.EnableFlyingVehicles)
+	{
+		for (const char* b : FlyingVehicles)
 		{
-			for (const char* b : FlyingVehicles)
-			{
-				fullVehicleList.push_back(b);
-			}
+			fullVehicleList.push_back(b);
 		}
 	}
 
@@ -197,7 +194,7 @@ void FillFullVehicleList()
 		{
 			fullVehicleList.push_back(c);
 		}
-		if (IsEnhanced)
+		if (IsEnhanced || IsCurrentPatch)
 		{
 			for (const char* cEnh : CurrentPatch_Water)
 			{
@@ -1035,7 +1032,7 @@ void LighthouseDecoration() {
 		}
 	}
 }
-void WarpPedsInsideVehicleTo(int vehicleID,float coordX, float coordY,float coordZ)
+void WarpPedsInsideVehicleTo(int vehicleID, float coordX, float coordY, float coordZ)
 {
 	// VS_ANY_PASSENGER = -2, //Any passenger seat
 	// VS_DRIVER = -1, // Drivers seat
@@ -1417,7 +1414,7 @@ void Update()
 			}
 
 			VEHICLE::_TASK_BRING_VEHICLE_TO_HALT(lastDriven, 15, 5, true); // Stop vehicle
-			
+
 			break;
 		case Pier:
 			if (IsInFlyingVehiclesList(lastValidVehicle))
@@ -1426,7 +1423,7 @@ void Update()
 			}
 			VEHICLE::_TASK_BRING_VEHICLE_TO_HALT(lastDriven, 15, 5, true); // Stop vehicle
 			// Remove any peds from the vehicle.
-			WarpPedsInsideVehicleTo(lastDriven, PierTPoint.x, PierTPoint.y, PierTPoint.z );
+			WarpPedsInsideVehicleTo(lastDriven, PierTPoint.x, PierTPoint.y, PierTPoint.z);
 			break;
 		}
 
@@ -1445,7 +1442,7 @@ void Update()
 		Vehicle lastDriven = PLAYER::GET_PLAYERS_LAST_VEHICLE();
 		ENTITY::SET_ENTITY_AS_MISSION_ENTITY(lastDriven, true, true);
 		// Car is probably free to delete;
-		if (!PED::IS_PED_IN_ANY_VEHICLE(pPedID, true)) 
+		if (!PED::IS_PED_IN_ANY_VEHICLE(pPedID, true))
 		{
 			VEHICLE::DETACH_VEHICLE_FROM_ANY_TOW_TRUCK(lastDriven);
 			QuickAddToDelivered(lastValidVehicle);
@@ -1490,7 +1487,15 @@ void ScriptMain()
 	{
 		IsEnhanced = true;
 	}
-
+	std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
+	if (gameVersionStr.find("1.27") != std::string::npos)
+	{
+		IsCurrentPatch = false;
+	}
+	else
+	{
+		IsCurrentPatch = true;
+	}
 	//Just to make sure everything is correctly loaded.
 	LoadHookPointers();
 	//Settings
