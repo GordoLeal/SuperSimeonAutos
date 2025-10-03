@@ -25,7 +25,7 @@ For 1.27 (Speedrunners Patch):
 ## How to play
 **Objective**: Locate vehicles across the map ([vehicles guide available](https://docs.google.com/document/d/1HLy1r_IYJAnth6uyUSzunOT0c65c5wLdxrW01GbjFZA/edit?usp=sharing)) and deliver them to highlighted delivery points.
 
-**Customizable Settings**: Upon loading a save for the first time the SSA_Settings.txt file is created, allowing you to enable/disable up to 4 delivery points: Del Perro Pier, Simeon, Lighthouse and Lifeguard Tower. (Lifeguard is disabled by default)
+**Customizable Settings**: Upon loading a save for the first time the SSA_Settings.txt file is created and you are able to manually edit it or use the in game menu (press GET IN COVER (Default: Q) + RELOAD GUN (Default: R)) to enable/disable up to 4 delivery points: Del Perro Pier, Simeon, Lighthouse and Lifeguard Tower. (Lifeguard is disabled by default)
 
 ![del perro pier](https://github.com/GordoLeal/SuperSimeonAutos/blob/master/githubpage/delperro.png)
 ![Simeon](https://github.com/GordoLeal/SuperSimeonAutos/blob/master/githubpage/simeon.png)
@@ -33,7 +33,7 @@ For 1.27 (Speedrunners Patch):
 ![lifeguardtower](https://github.com/GordoLeal/SuperSimeonAutos/blob/master/githubpage/lifeguard.png)
 
 ## Best Experience
-If you want the same experience as the mods from the 3D era games, enable ONLY the **Del Perro Pier** and **Lighthouse** as delivery points in SSA_Settings.txt.
+If you want the same experience as the mods from the 3D era games, enable ONLY the **Del Perro Pier** and **Lighthouse** as delivery points.
 If you want a chill and fast experience, keep all the options as default.
 
 Other small options inside SSA_Settings.txt or the In Game Menu are also available for you to adjust your gameplay.
