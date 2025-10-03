@@ -312,15 +312,27 @@ void SaveCheck()
 				/*		for (char* dah : deliveredVehicles) {
 							OutputDebugString(dah);
 						}*/
+
+				std::string adebug = std::to_string(deliveredVehicles.size());
+				adebug += " vehicles manual saved";
+				OutputDebugString(adebug.c_str());
 				SaveSystem::ErrSave err = SaveSystem::SaveProgress(deliveredVehicles, false, pathToSaveFolder);
 				if (err == SaveSystem::ErrSave::FileDoesNotExistOrNotBellowBuffer) {
 					CreateHelpText((char*)"Saving failed! please try again...", true);
+					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! please try again...");
+					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
+					GAMEPLAY::DO_AUTO_SAVE();
 				}
 				else if (err == SaveSystem::ErrSave::SaveDone) {
 					CreateHelpText((char*)"Collected Vehicles manual saved with success!", true);
 				}
 				else {
 					CreateHelpText((char*)"Saving error! please try again...", true);
+					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! something bad happened, please save the game again.");
+					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
+					GAMEPLAY::DO_AUTO_SAVE();
 				}
 			}
 		}
@@ -335,20 +347,30 @@ void SaveCheck()
 	{
 		if (!alreadyAutoSaving && !missionReplayCalled) {
 			alreadyAutoSaving = true;
-			WAIT(500);//GTA needs to finish messing with the file before we do anything. Auto saves need a bit more because they take some time to update the save file.
+			WAIT(600);//GTA needs to finish messing with the file before we do anything. Auto saves need a bit more because they take some time to update the save file.
 			if (deliveredVehicles.size() > 0) {
 				//for (char* dah : deliveredVehicles) {
 				//	OutputDebugString(dah);
 				//}
-				SaveSystem::ErrSave err = SaveSystem::SaveProgress(deliveredVehicles, false, pathToSaveFolder);
+				std::string adebug = std::to_string( deliveredVehicles.size());
+				adebug += " vehicles auto saved";
+				OutputDebugString(adebug.c_str());
+				SaveSystem::ErrSave err = SaveSystem::SaveProgressToAutoSaveFile(deliveredVehicles, false, pathToSaveFolder);
 				if (err == SaveSystem::ErrSave::FileDoesNotExistOrNotBellowBuffer) {
 					CreateHelpText((char*)"Saving failed! please try again...", true);
+					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Please make sure to save the game!");
+					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 				}
 				else if (err == SaveSystem::ErrSave::SaveDone) {
 					CreateHelpText((char*)"Collected Vehicles autosaved with success!", true);
+					
 				}
 				else {
 					CreateHelpText((char*)"Error while Auto Saving! please try again...", true);
+					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Something bad happened. Please make sure to save the game!");
+					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 				}
 			}
 		}
@@ -366,6 +388,9 @@ void SaveCheck()
 		if (!alreadyBedSaving && !missionReplayCalled) {
 			alreadyBedSaving = true;
 			WAIT(200);//GTA needs to finish messing with the file before we do anything.
+			std::string adebug = std::to_string(deliveredVehicles.size());
+			adebug += " vehicles bed saved";
+			OutputDebugString(adebug.c_str());
 			if (deliveredVehicles.size() > 0) {
 				//for (char* dah : deliveredVehicles) {
 				//	OutputDebugString(dah);
@@ -373,12 +398,20 @@ void SaveCheck()
 				SaveSystem::ErrSave err = SaveSystem::SaveProgress(deliveredVehicles, false, pathToSaveFolder);
 				if (err == SaveSystem::ErrSave::FileDoesNotExistOrNotBellowBuffer) {
 					CreateHelpText((char*)"Saving failed! please try again...", true);
+					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! please try again...");
+					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
+					GAMEPLAY::DO_AUTO_SAVE();
 				}
 				else if (err == SaveSystem::ErrSave::SaveDone) {
 					CreateHelpText((char*)"Collected Vehicles saved with success!", true);
 				}
 				else {
 					CreateHelpText((char*)"Saving error! please try again...", true);
+					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! something bad happened, please save the game again.");
+					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
+					GAMEPLAY::DO_AUTO_SAVE();
 				}
 			}
 		}
@@ -1194,7 +1227,7 @@ void Update()
 						trHelper += ")";
 						CreateHelpText((char*)trHelper.c_str(), true);
 						UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
-						UI::_ADD_TEXT_COMPONENT_STRING((char*)"WHY DID YOU BRING A ENTIRE TRAILER? AND WHY THERE'S A GUY INSIDE IT?");
+						UI::_ADD_TEXT_COMPONENT_STRING((char*)"WHY DID YOU BRING AN ENTIRE TRAILER? AND WHY IS THERE A GUY INSIDE IT?");
 						UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", false, 4, (char*)"SIMEON", (char*)"What is this?");
 						UI::_DRAW_NOTIFICATION(0, 1);
 						OrtegaTrailerDelivered = true;

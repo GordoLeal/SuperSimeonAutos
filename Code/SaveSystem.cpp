@@ -53,7 +53,7 @@ SaveSystem::ErrSave SaveSystem::SaveProgress(std::list<char*> vehicles, bool isE
 						// BUG reminder: if an autosave is done and manual save after, the autosave can take over the manual save.
 						// instead of looking for a single file we now look for ANY file under 5 seconds. if we have multiple saves with 5 seconds it will write to it.
 						// https://clips.twitch.tv/create/AwkwardPlausibleSkirretArgieB8-E27gLMJ-PqJlLz0i
-
+						//Update 03 of september 2025: it should be fixed now that the autosave and manual saves are separated functions
 						mostRecentModifiedTime = folderData.ftLastWriteTime;
 						mostRecentFile = folderData.cFileName;
 
@@ -72,6 +72,63 @@ SaveSystem::ErrSave SaveSystem::SaveProgress(std::list<char*> vehicles, bool isE
 						saveStream.close();
 
 					}
+				}
+		}
+	} while (FindNextFileW(hFind, &folderData));
+	FindClose(hFind);
+
+	if (mostRecentFile.empty())
+	{
+		// We didn't find a save file or is all the saves are bellow the 5 seconds buffer, meaning a save didn't happen.
+		return ErrSave::FileDoesNotExistOrNotBellowBuffer;
+	}
+
+	return ErrSave::SaveDone;
+}
+
+SaveSystem::ErrSave SaveSystem::SaveProgressToAutoSaveFile(std::list<char*> vehicles, bool isEnhanced, std::wstring saveFolderPath)
+{
+	// Find the newest modified save.
+	std::wstring testingFilesPath = saveFolderPath + L"\\*";
+	// start the check files loop operation
+	WIN32_FIND_DATAW folderData;
+	HANDLE hFind = FindFirstFileW(testingFilesPath.c_str(), &folderData);
+	if (hFind == INVALID_HANDLE_VALUE) //For debug
+	{
+		return ErrSave::FolderNotFound;
+	}
+
+	FILETIME mostRecentModifiedTime = { 0, 0 };
+	std::wstring mostRecentFile;
+	do {
+		//ignore folders.
+		if (!(folderData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			//the fastest way to compare wchar* is to just abuse the wstring powers.
+			//Uses a bit more of memory and cpu cycles, but is the easier solution.
+			std::wstring tobetested = folderData.cFileName;
+			//Check only the save files and ignore the backup files.
+			//settings and snapmatic are saved in the same folder so we need to ignore them.
+			if (!tobetested.empty())
+				if (tobetested.find(L"SGTA50015") != std::wstring::npos && tobetested.find(L".bak") == std::wstring::npos) {
+
+					mostRecentModifiedTime = folderData.ftLastWriteTime;
+					mostRecentFile = folderData.cFileName;
+
+					std::wstring lastUsedSaveFilePath = saveFolderPath + L"\\" + L"SGTA50015";
+					std::fstream saveStream;
+					// ios::ate: will write to the very end of the file. i don't want to break the save file.
+					saveStream.open(lastUsedSaveFilePath.c_str(), std::ios::in | std::ios::out | std::ios::binary | std::ios::ate);
+					saveStream << Identifier.c_str(); //identifier to know from now on is only the data we have written, need to be something unique.
+					//don't need fancy json/xml stuff for now, just write the data and recover later.
+					for (char* v : vehicles) {
+						saveStream << ',';
+						saveStream << v;
+						saveStream << '#';
+					}
+					saveStream << '!';// identifier to know we are over with the data.
+					saveStream.close();
+
+
 				}
 		}
 	} while (FindNextFileW(hFind, &folderData));
@@ -440,7 +497,7 @@ SaveSystem::ErrSave SaveSystem::LoadProgress(std::wstring saveFolderPath, int sa
 		saveFileName += L"00";
 	}
 	saveFileName += std::to_wstring(saveSlotNumber);
-	std::wstring testingA(L"result:");
+	std::wstring testingA(L"[LoadProgress] result:");
 	testingA += saveFileName;
 	OutputDebugStringW(testingA.c_str());
 	bool foundSaveFile = false;

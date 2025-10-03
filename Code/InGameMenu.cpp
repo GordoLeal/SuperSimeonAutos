@@ -330,7 +330,7 @@ void InGameMenu::DrawMenu()
 		if (allowEditVehicles)
 		{
 			DrawReactOnTopLeft(menuPosX, anchorListStart + (selectionH * 9), menuW, selectionH, 0, 0, 0, 255);
-			DrawBasicText((char*)"[EDIT MODE] Press ENTER to remove this vehicle.", menuPosX +(menuW / 2), anchorListStart + (selectionH * 8) + 0.0073f, 0.27f, 0,0);
+			DrawBasicText((char*)"[EDIT MODE] Press ENTER to remove this vehicle.", menuPosX +(menuW / 2), anchorListStart + (selectionH * 9) + 0.0073f, 0.27f, 0,0);
 		}
 		break;
 
