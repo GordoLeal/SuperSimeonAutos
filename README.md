@@ -43,6 +43,9 @@ Other small options inside SSA_Settings.txt or the In Game Menu are also availab
 We also have a guide that you can access [here](https://docs.google.com/document/d/1HLy1r_IYJAnth6uyUSzunOT0c65c5wLdxrW01GbjFZA/edit?tab=t.0#heading=h.ufh0j67e710b) or you can check the [Wiki](https://github.com/GordoLeal/SuperSimeonAutos/wiki).
 
 ## Support
+Lost of progress?
+You can enable edit mode using the in game menu or you can use the [bulk manual edit option](https://github.com/GordoLeal/SuperSimeonAutos/wiki/How-to-Bulk-Edit-the-vehicle-list)
+
 For bugs, questions, or suggestions, send a message in #ssa-mod-discussion in the [GTA V Speedruns Discord](https://discord.com/invite/3qjGGBM) or check the [Project-127 repository](https://github.com/TwosHusbandS/Project-127/) for more information.
 
 ## Credits
