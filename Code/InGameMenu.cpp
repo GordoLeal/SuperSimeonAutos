@@ -289,9 +289,10 @@ void InGameMenu::DrawMenu()
 		DrawReactOnTopLeft(menuPosX, anchorSecBanner, menuW, secondaryBannerH, 0, 0, 0, 255);
 		DrawBasicText((char*)"Missing Vehicles", menuPosX + (menuW / 2), anchorSecBanner, 0.4f, 0, 0);
 		if (MissingSelection < 0)
-			MissingSelection = 0;
+			MissingSelection = missingVehiclesVector.size() - 1 >= 0 ? missingVehiclesVector.size() - 1 : 0;
+
 		if (MissingSelection >= missingVehiclesVector.size())
-			MissingSelection = missingVehiclesVector.size() - 1;
+			MissingSelection = 0;
 
 		DrawMissingVehicleSelection(menuPosX, anchorListStart, MissingSelection - 4, menuW, selectionH, false);
 		DrawMissingVehicleSelection(menuPosX, anchorListStart + selectionH, MissingSelection - 3, menuW, selectionH, false);
@@ -313,10 +314,12 @@ void InGameMenu::DrawMenu()
 		DrawReactOnTopLeft(menuPosX, anchorSecBanner, menuW, secondaryBannerH, 0, 0, 0, 255);
 		DrawBasicText((char*)"Delivered Vehicles", menuPosX + (menuW / 2), anchorSecBanner, 0.4f, 0, 0);
 
+		//Make the list loop if the player is at the Bottom or Top and the is trying to select an outside value.
 		if (DeliveredSelection < 0)
-			DeliveredSelection = 0;
+			DeliveredSelection = deliveredVehiclesVector.size() - 1 >=0 ? deliveredVehiclesVector.size() - 1:0;
+
 		if (DeliveredSelection >= deliveredVehiclesVector.size())
-			DeliveredSelection = deliveredVehiclesVector.size() - 1;
+			DeliveredSelection = 0;
 
 		DrawDeliveredVehicleSelection(menuPosX, anchorListStart, DeliveredSelection - 4, menuW, selectionH, false);
 		DrawDeliveredVehicleSelection(menuPosX, anchorListStart + selectionH, DeliveredSelection - 3, menuW, selectionH, false);

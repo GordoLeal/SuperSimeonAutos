@@ -65,7 +65,7 @@ DWORD genStartPressingTime;
 bool genStartTimer = false;
 bool genAlreadyCreatingFile = false;
 // Recover Remaining Cars from List.
-const DWORD recMaxPressingTime = 8000;
+const DWORD recMaxPressingTime = 5000;
 DWORD recStartPressingTime;
 bool recStartTimer = false;
 bool recAlreadyLookingFile = false;
@@ -1360,6 +1360,19 @@ void Update()
 		// Player is in a valid vehicle, wait for player to get at the delivery point and do the removing process.
 		if (PED::IS_PED_IN_ANY_VEHICLE(pPedID, false))
 		{
+			// Bug: In some situations, like in the obvious big score heist, the game forces the player to switch character.
+			// if both characters are inside a vehicle, and the vehicle the player switched from can be delivered,
+			// even if the character the player switched to is in already delivered vehicle, the game don't tell the mod that
+			// the player exited the vehicle or something so we can recheck.
+			// We need to add this extra check to make sure the current vehicle is the same vehicle.
+			if (VEHICLE::IS_VEHICLE_MODEL(PLAYER::GET_PLAYERS_LAST_VEHICLE(), GAMEPLAY::GET_HASH_KEY(lastValidVehicle)) == false)
+			{
+				// Player got out of vehicle, stop everything.
+				DisableAllDeliveryBlips();
+				currentStage = ScriptStage::CheckCurrentVehicle;
+				lastValidVehicle = (char*)"";
+			}
+
 			// test if player is in delivery area.
 			switch (IsEntityInDeliveryArea(pPedID))
 			{
