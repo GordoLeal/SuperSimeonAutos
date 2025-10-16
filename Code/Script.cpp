@@ -3,6 +3,7 @@
 #include "keyboard.h"
 #include "Vehicles.h"
 #include "InGameMenu.h"
+#include "QuickLog.h"
 std::list<char*> deliveredVehicles;
 std::list<const char*> fullVehicleList;
 //Parking Lot Abuse
@@ -120,6 +121,7 @@ void LoadHookPointers() {
 		{
 			OutputDebugString("something happened address could not be loaded... (getLastReadSlotNumber)");
 			CreateHelpText((char*)"something happened address could not be loaded... (getLastReadSlotNumber)", true);
+			QuickLog("[ERROR] something happened address could not be loaded... (getLastReadSlotNumber)");
 			return;
 		}
 	}
@@ -127,6 +129,7 @@ void LoadHookPointers() {
 	{
 		OutputDebugString("something happened and pointers could not be loaded... (getPointerToLastLoadedSlot)");
 		CreateHelpText((char*)"something happened and pointers could not be loaded... (getPointerToLastLoadedSlot)", true);
+		QuickLog("[ERROR] something happened and pointers could not be loaded... (getPointerToLastLoadedSlot)");
 		return;
 	}
 
@@ -135,6 +138,7 @@ void LoadHookPointers() {
 		if (SaveSystem::GetToBeReadSaveFile(&ToBeLoadedSaveFile, &pToBeLoadedSaveFilePTR) != SaveSystem::ErrSave::SaveDone) {
 			OutputDebugString("something happened address could not be loaded... (ToBeLoadedSaveFile)");
 			CreateHelpText((char*)"something happened address could not be loaded... (ToBeLoadedSaveFile)", true);
+			QuickLog("[ERROR] something happened address could not be loaded... (ToBeLoadedSaveFile)");
 			return;
 		}
 	}
@@ -142,6 +146,7 @@ void LoadHookPointers() {
 	{
 		OutputDebugString("something happened and pointers could not be loaded...(PointerToBeLoadedSaveFile)");
 		CreateHelpText((char*)"something happened and pointers could not be loaded...(PointerToBeLoadedSaveFile)", true);
+		QuickLog("[ERROR] something happened and pointers could not be loaded...(PointerToBeLoadedSaveFile)");
 		return;
 	}
 
@@ -149,6 +154,7 @@ void LoadHookPointers() {
 		if (SaveSystem::GetIntPointerFromPointer(&IsGameSaving, &pIsSaveMenuOpen) != SaveSystem::ErrSave::SaveDone) {
 			OutputDebugString("something happened address could not be loaded...(ToIsSaveHappening)");
 			CreateHelpText((char*)"something happened address could not be loaded...(ToIsSaveHappening)", true);
+			QuickLog("[ERROR] something happened address could not be loaded...(ToIsSaveHappening)");
 			return;
 		}
 	}
@@ -156,6 +162,7 @@ void LoadHookPointers() {
 	{
 		OutputDebugString("something happened and pointers could not be loaded...(PointerToIsSaveHappening)");
 		CreateHelpText((char*)"something happened and pointers could not be loaded...(PointerToIsSaveHappening)", true);
+		QuickLog("[ERROR] something happened and pointers could not be loaded...(PointerToIsSaveHappening)");
 		return;
 	}
 }
@@ -314,8 +321,9 @@ void SaveCheck()
 						}*/
 
 				std::string adebug = std::to_string(deliveredVehicles.size());
-				adebug += " vehicles manual saved";
+				adebug += " vehicles trying to manual save";
 				OutputDebugString(adebug.c_str());
+				QuickLog(adebug.c_str());
 				SaveSystem::ErrSave err = SaveSystem::SaveProgress(deliveredVehicles, false, pathToSaveFolder);
 				if (err == SaveSystem::ErrSave::FileDoesNotExistOrNotBellowBuffer) {
 					CreateHelpText((char*)"Saving failed! please try again...", true);
@@ -323,6 +331,7 @@ void SaveCheck()
 					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! please try again...");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					GAMEPLAY::DO_AUTO_SAVE();
+					QuickLog("[ERROR] MANUAL SAVE FAILED (FileDoesNotExistOrNotBellowBuffer), CALLING GAMEPLAY::DO_AUTO_SAVE() AS BACKUP");
 				}
 				else if (err == SaveSystem::ErrSave::SaveDone) {
 					CreateHelpText((char*)"Collected Vehicles manual saved with success!", true);
@@ -333,6 +342,7 @@ void SaveCheck()
 					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! something bad happened, please save the game again.");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					GAMEPLAY::DO_AUTO_SAVE();
+					QuickLog("[ERROR] MANUAL SAVE FAILED (No reason know, something bad), CALLING GAMEPLAY::DO_AUTO_SAVE() AS BACKUP");
 				}
 			}
 		}
@@ -361,6 +371,7 @@ void SaveCheck()
 					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
 					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Please make sure to save the game!");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
+					QuickLog("[ERROR] AUTO SAVE FAILED (FileDoesNotExistOrNotBellowBuffer)");
 				}
 				else if (err == SaveSystem::ErrSave::SaveDone) {
 					CreateHelpText((char*)"Collected Vehicles autosaved with success!", true);
@@ -371,6 +382,7 @@ void SaveCheck()
 					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
 					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Something bad happened. Please make sure to save the game!");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
+					QuickLog("[ERROR] AUTO SAVE FAILED (No reason know, something bad)");
 				}
 			}
 		}
@@ -402,6 +414,7 @@ void SaveCheck()
 					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! please try again...");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					GAMEPLAY::DO_AUTO_SAVE();
+					QuickLog("[ERROR] BED SAVE FAILED (FileDoesNotExistOrNotBellowBuffer), calling auto save as backup");
 				}
 				else if (err == SaveSystem::ErrSave::SaveDone) {
 					CreateHelpText((char*)"Collected Vehicles saved with success!", true);
@@ -412,6 +425,7 @@ void SaveCheck()
 					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! something bad happened, please save the game again.");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					GAMEPLAY::DO_AUTO_SAVE();
+					QuickLog("[ERROR] BED SAVE FAILED (No reason know, something bad), calling auto save as backup");
 				}
 			}
 		}
@@ -1367,7 +1381,6 @@ void Update()
 			// We need to add this extra check to make sure the current vehicle is the same vehicle.
 			if (VEHICLE::IS_VEHICLE_MODEL(PLAYER::GET_PLAYERS_LAST_VEHICLE(), GAMEPLAY::GET_HASH_KEY(lastValidVehicle)) == false)
 			{
-				// Player got out of vehicle, stop everything.
 				DisableAllDeliveryBlips();
 				currentStage = ScriptStage::CheckCurrentVehicle;
 				lastValidVehicle = (char*)"";
@@ -1521,6 +1534,7 @@ void Update()
 // the code inside the script is reloaded after transitions and loading screens.
 void ScriptMain()
 {
+	QuickLog("SCRIPT_RELOADED. Maybe just a start, save load or something else.");
 	lightHouseCoords.x = -1831.544f;
 	lightHouseCoords.y = -1189.259f;
 	lightHouseCoords.z = 27.16121f;
@@ -1531,15 +1545,21 @@ void ScriptMain()
 	GetModuleFileNameA(Module, modulePath, 260);
 	if (std::string(modulePath).find("GTA5_Enhanced.exe") != std::string::npos)
 	{
+		QuickLog("Is Enhanced? TRUE");
 		IsEnhanced = true;
+	}else
+	{
+		QuickLog("Is Enhanced? FALSE");
 	}
 	std::string gameVersionStr = UNK3::_GET_GAME_VERSION();
 	if (gameVersionStr.find("1.27") != std::string::npos)
 	{
+		QuickLog("Is CURRENT PATCH? FALSE");
 		IsCurrentPatch = false;
 	}
 	else
 	{
+		QuickLog("Is CURRENT PATCH? TRUE");
 		IsCurrentPatch = true;
 	}
 	//Just to make sure everything is correctly loaded.

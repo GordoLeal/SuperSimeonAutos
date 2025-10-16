@@ -172,6 +172,7 @@
     <ClCompile Include="Code\InGameMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Code\QuickLog.h" />
     <ClInclude Include="Code\keyboard.h" />
     <ClInclude Include="Code\SaveSystem.h" />
     <ClInclude Include="Code\Script.h" />

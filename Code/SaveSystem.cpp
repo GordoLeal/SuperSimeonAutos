@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <ShlObj.h>
+#include "QuickLog.h"
 
 const std::string Identifier = "GORDOLEAL?";
 //outputdebugstringA()
@@ -18,6 +19,8 @@ SaveSystem::ErrSave SaveSystem::SaveProgress(std::list<char*> vehicles, bool isE
 	HANDLE hFind = FindFirstFileW(testingFilesPath.c_str(), &folderData);
 	if (hFind == INVALID_HANDLE_VALUE) //For debug
 	{
+		QuickLog("[ERROR]Folder not found. hFind == INVALID_HANDLE_VALUE");
+		QuickLogW(testingFilesPath.c_str());
 		return ErrSave::FolderNotFound;
 	}
 
@@ -61,6 +64,10 @@ SaveSystem::ErrSave SaveSystem::SaveProgress(std::list<char*> vehicles, bool isE
 						std::fstream saveStream;
 						// ios::ate: will write to the very end of the file. i don't want to break the save file.
 						saveStream.open(lastUsedSaveFilePath.c_str(), std::ios::in | std::ios::out | std::ios::binary | std::ios::ate);
+						if (!saveStream.is_open()) {
+							QuickLog("[ERROR]Could not Open Save Stream for some reason. saveStream.is_open() == FALSE");
+							QuickLogW(testingFilesPath.c_str());
+						}
 						saveStream << Identifier.c_str(); //identifier to know from now on is only the data we have written, need to be something unique.
 						//don't need fancy json/xml stuff for now, just write the data and recover later.
 						for (char* v : vehicles) {
@@ -80,6 +87,8 @@ SaveSystem::ErrSave SaveSystem::SaveProgress(std::list<char*> vehicles, bool isE
 	if (mostRecentFile.empty())
 	{
 		// We didn't find a save file or is all the saves are bellow the 5 seconds buffer, meaning a save didn't happen.
+		QuickLog("[ERROR]Failed to Open file, did not exist or bellow buffer. mostRecentFile.empty() == TRUE");
+		QuickLogW(testingFilesPath.c_str());
 		return ErrSave::FileDoesNotExistOrNotBellowBuffer;
 	}
 
@@ -627,7 +636,6 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 		// need to manualy free memory. (By MSDC: https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetknownfolderpath )
 		CoTaskMemFree(testPathDoc);
 		return SaveSystem::ErrSave::DocumentsFolderNotFound;
-		break;
 	}
 
 	std::wstring finalpath = L"";

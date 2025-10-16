@@ -53,5 +53,8 @@
     <ClInclude Include="Code\InGameMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\QuickLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
