@@ -104,6 +104,7 @@ SaveSystem::ErrSave SaveSystem::SaveProgressToAutoSaveFile(std::list<char*> vehi
 	HANDLE hFind = FindFirstFileW(testingFilesPath.c_str(), &folderData);
 	if (hFind == INVALID_HANDLE_VALUE) //For debug
 	{
+		QuickLog("[ERROR] FolderNotFound | SaveProgressToAutoSaveFile couldn't find file for auto save.");
 		return ErrSave::FolderNotFound;
 	}
 
@@ -145,7 +146,7 @@ SaveSystem::ErrSave SaveSystem::SaveProgressToAutoSaveFile(std::list<char*> vehi
 
 	if (mostRecentFile.empty())
 	{
-		// We didn't find a save file or is all the saves are bellow the 5 seconds buffer, meaning a save didn't happen.
+		QuickLog("[Warning] FileDoesNotExistOrNotBellowBuffer | SaveProgressToAutoSaveFile failed or didn't find any save bellow buffer (can be ignored).");
 		return ErrSave::FileDoesNotExistOrNotBellowBuffer;
 	}
 
@@ -548,6 +549,7 @@ SaveSystem::ErrSave SaveSystem::LoadProgressForFirstTime(std::wstring saveFolder
 	HANDLE hFind = FindFirstFileW(testingFilesPath.c_str(), &folderData);
 	if (hFind == INVALID_HANDLE_VALUE) //For debug
 	{
+		QuickLog("[ERROR] FolderNotFound | LoadProgressForfirstTime could not find the savefolderpath");
 		return ErrSave::FolderNotFound;
 	}
 
@@ -577,6 +579,7 @@ SaveSystem::ErrSave SaveSystem::LoadProgressForFirstTime(std::wstring saveFolder
 	FindClose(hFind);
 	if (mostRecentFile.empty())
 	{
+		QuickLog("[ERROR] FileDoesNotExist | Could not found any save file?");
 		return ErrSave::FileDoesNotExist;
 	}
 	return FillArrayWithSaveFileData(saveFolderPath, mostRecentFile, deliveredVehiclesFromSave);
@@ -635,6 +638,7 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 	case E_INVALIDARG:
 		// need to manualy free memory. (By MSDC: https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shgetknownfolderpath )
 		CoTaskMemFree(testPathDoc);
+		QuickLog("[ERROR] could not find documents folder using SHGetKnownFolderPath. I blame Microsoft");
 		return SaveSystem::ErrSave::DocumentsFolderNotFound;
 	}
 
@@ -657,6 +661,7 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 		HANDLE hFind = FindFirstFileW((enhancedSavePath + L"\\*").c_str(), &folderDataEnhanced);
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
+			QuickLog("[ERROR] EnhancedFolderNotFound | Could not find any folder called profiles");
 			return ErrSave::EnhancedFolderNotFound;
 		}
 		// Get the most recent modified folder, this way we know this is correct folder we want to use.
@@ -677,6 +682,7 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 
 		if (mostRecentFolder_Enhanced.empty())
 		{
+			QuickLog("[ERROR] EnhancedFolderNotFound | Could not find any profiles folders");
 			return ErrSave::EnhancedFolderEmpty;
 		}
 		finalpath = enhancedSavePath + L"\\" + mostRecentFolder_Enhanced;
@@ -696,6 +702,7 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 		HANDLE hFind = FindFirstFileW((OldPatchSavePath + L"\\*").c_str(), &folderData_OldPatch);
 		if (hFind == INVALID_HANDLE_VALUE)  //For Debug
 		{
+			QuickLog("[ERROR] OldPatchFolderNotFound | could not find path for save in old patch");
 			return ErrSave::OldPatchFolderNotFound;
 		}
 		// Get the most recent modified folder, only way we know this is correct folder we want to use.
@@ -715,7 +722,8 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 		FindClose(hFind);
 
 		if (mostRecentFolder_OldPatch.empty())
-		{//For Debug
+		{
+			QuickLog("[ERROR] OldPatchFolderEmpty | Could not find any profiles folders inside project127 folder");
 			return ErrSave::OldPatchFolderEmpty;
 		}
 		finalpath = OldPatchSavePath + L"\\" + mostRecentFolder_OldPatch;
@@ -723,6 +731,8 @@ SaveSystem::ErrSave SaveSystem::GetSaveFilePath(bool isCurrentPatch, bool IsEnha
 	}
 
 	*saveFolderPathBuffer = finalpath;
+	QuickLog("Final path for save file:");
+	QuickLogW(finalpath.c_str());
 	CoTaskMemFree(testPathDoc);
 	return ErrSave::SaveDone;
 }

@@ -328,7 +328,7 @@ void SaveCheck()
 				if (err == SaveSystem::ErrSave::FileDoesNotExistOrNotBellowBuffer) {
 					CreateHelpText((char*)"Saving failed! please try again...", true);
 					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
-					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! please try again...");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! trying to auto save...");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					GAMEPLAY::DO_AUTO_SAVE();
 					QuickLog("[ERROR] MANUAL SAVE FAILED (FileDoesNotExistOrNotBellowBuffer), CALLING GAMEPLAY::DO_AUTO_SAVE() AS BACKUP");
@@ -339,7 +339,7 @@ void SaveCheck()
 				else {
 					CreateHelpText((char*)"Saving error! please try again...", true);
 					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
-					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! something bad happened, please save the game again.");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Saving failed! something bad happened, trying to auto save.");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					GAMEPLAY::DO_AUTO_SAVE();
 					QuickLog("[ERROR] MANUAL SAVE FAILED (No reason know, something bad), CALLING GAMEPLAY::DO_AUTO_SAVE() AS BACKUP");
@@ -369,7 +369,7 @@ void SaveCheck()
 				if (err == SaveSystem::ErrSave::FileDoesNotExistOrNotBellowBuffer) {
 					CreateHelpText((char*)"Saving failed! please try again...", true);
 					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
-					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Please make sure to save the game!");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Please try manual save the game!");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					QuickLog("[ERROR] AUTO SAVE FAILED (FileDoesNotExistOrNotBellowBuffer)");
 				}
@@ -380,7 +380,7 @@ void SaveCheck()
 				else {
 					CreateHelpText((char*)"Error while Auto Saving! please try again...", true);
 					UI::_SET_NOTIFICATION_TEXT_ENTRY((char*)"STRING");
-					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Something bad happened. Please make sure to save the game!");
+					UI::_ADD_TEXT_COMPONENT_STRING((char*)"Failed to auto save the vehicles. Something bad happened. Please try manual save the game!");
 					UI::_SET_NOTIFICATION_MESSAGE((char*)"CHAR_SIMEON", (char*)"CHAR_SIMEON", true, 4, (char*)"SIMEON", (char*)"");
 					QuickLog("[ERROR] AUTO SAVE FAILED (No reason know, something bad)");
 				}
@@ -1534,6 +1534,7 @@ void Update()
 // the code inside the script is reloaded after transitions and loading screens.
 void ScriptMain()
 {
+	DeleteQuickLogFile();
 	QuickLog("SCRIPT_RELOADED. Maybe just a start, save load or something else.");
 	lightHouseCoords.x = -1831.544f;
 	lightHouseCoords.y = -1189.259f;

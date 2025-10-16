@@ -5,7 +5,7 @@
 static void QuickLog(const char* log)
 {
 	std::fstream logStream;
-	logStream.open("SSA_Log.txt",std::ios::in | std::ios::out | std::ios::app);
+	logStream.open("SSA_Log.txt", std::ios::in | std::ios::out | std::ios::app);
 	if (!logStream.is_open()) {
 		return;
 	}
@@ -24,4 +24,9 @@ static void QuickLogW(const wchar_t* log)
 	logStream << log;
 	logStream << '\n';
 	logStream.close();
+}
+
+static void DeleteQuickLogFile()
+{
+	remove("SSA_Log.txt");
 }
