@@ -53,7 +53,7 @@ Mod Created By GordoLeal.
 
 Thanks to Special For and Gogsi for providing help with the code and knowledge about the game.
 
-Thanks to Unnamed, AlexHonix, Twisted and the GTAV speedrun community for helping with the vehicle list.
+Thanks to Unnamed, Twisted and the GTAV speedrun community for helping with the vehicle list.
 
 ## Project Tree
 This mod is coded and compiled with Visual Studio Community 2022.
